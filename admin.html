@@ -3,232 +3,1090 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Royal Admin</title>
+    <title>پنل مدیریت | Royal Restaurant</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { font-family: 'Vazirmatn', sans-serif; }
-        body { background: #0D0D0D; color: white; }
-        .gold-gradient { background: linear-gradient(135deg, #D4AF37 0%, #F4E4BA 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .btn-gold { background: #D4AF37; color: black; font-weight: bold; transition: 0.2s; }
-        .btn-gold:hover { background: #F4E4BA; }
-        input, select { background: #2D2D2D; border: 1px solid #D4AF37; color: white; padding: 0.5rem; border-radius: 0.5rem; width: 100%; }
-        .tab-btn.active { background: #D4AF37; color: black; }
+        :root {
+            --gold: #D4AF37;
+            --gold-light: #F4E4BA;
+            --dark: #0D0D0D;
+            --dark-light: #1A1A1A;
+        }
+        body {
+            background: linear-gradient(135deg, #0D0D0D 0%, #1A1A1A 50%, #0D0D0D 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .gold-gradient {
+            background: linear-gradient(135deg, #D4AF37 0%, #F4E4BA 50%, #D4AF37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .gold-border { border: 1px solid rgba(212, 175, 55, 0.3); }
+        .gold-glow { box-shadow: 0 0 30px rgba(212, 175, 55, 0.2); }
+        .btn-gold {
+            background: linear-gradient(135deg, #D4AF37 0%, #B8962D 100%);
+            color: black;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-gold:hover {
+            background: linear-gradient(135deg, #F4E4BA 0%, #D4AF37 100%);
+            transform: scale(1.02);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #ff6b6b 0%, #e74c3c 100%);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60 0%, #1e8449 100%);
+            color: white;
+        }
+        .btn-info {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .tab-active {
+            background: linear-gradient(135deg, #D4AF37 0%, #B8962D 100%);
+            color: #0D0D0D;
+        }
+        .modal-backdrop {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+        }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        input, textarea, select {
+            background: #2D2D2D !important;
+            border: 1px solid rgba(212, 175, 55, 0.3) !important;
+            color: white !important;
+            outline: none;
+        }
+        input:focus, textarea:focus, select:focus { 
+            border-color: #D4AF37 !important;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+        }
+        .status-pending { background: #f39c12; color: black; }
+        .status-confirmed { background: #27ae60; color: white; }
+        .status-preparing { background: #3498db; color: white; }
+        .status-shipped { background: #9b59b6; color: white; }
+        .status-delivered { background: #1abc9c; color: white; }
+        .status-cancelled { background: #e74c3c; color: white; }
+        
+        .card {
+            background: linear-gradient(145deg, #1a1a1a 0%, #222 100%);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            border-color: rgba(212, 175, 55, 0.5);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        .stat-card {
+            background: linear-gradient(145deg, #1a1a1a 0%, #252525 100%);
+        }
     </style>
 </head>
-<body class="p-4">
-    <!-- Login -->
-    <div id="login" class="fixed inset-0 bg-black z-50 flex items-center justify-center">
-        <div class="bg-[#1A1A1A] p-8 rounded-2xl border border-[#D4AF37] w-80 text-center">
-            <h2 class="text-2xl font-bold gold-gradient mb-4">پنل مدیریت</h2>
-            <input type="password" id="token" placeholder="Admin Token" class="mb-4 text-center">
-            <button onclick="login()" class="w-full btn-gold py-2 rounded">ورود</button>
+<body>
+    <!-- Login Modal -->
+    <div id="loginModal" class="fixed inset-0 z-[200] flex items-center justify-center bg-black">
+        <div class="bg-[#1A1A1A] rounded-2xl gold-border gold-glow p-8 w-full max-w-sm mx-4 animate-fade-in">
+            <div class="text-center mb-6">
+                <div class="w-20 h-20 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#B8962D] mx-auto mb-4 flex items-center justify-center shadow-lg shadow-[#D4AF37]/30">
+                    <i class="fas fa-crown text-3xl text-black"></i>
+                </div>
+                <h2 class="text-2xl font-bold gold-gradient">پنل مدیریت</h2>
+                <p class="text-gray-400 text-sm mt-1">Royal Restaurant</p>
+            </div>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="text-sm text-gray-400 block mb-1">توکن ادمین</label>
+                    <input type="password" id="adminTokenInput" placeholder="توکن را وارد کنید..." required 
+                           class="w-full p-4 rounded-xl text-center text-lg tracking-widest">
+                </div>
+                <button type="submit" class="w-full btn-gold py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2">
+                    <i class="fas fa-sign-in-alt"></i>
+                    ورود به پنل
+                </button>
+            </form>
+            <p id="loginError" class="text-red-500 text-center mt-4 hidden">توکن نامعتبر است</p>
         </div>
     </div>
 
-    <!-- Dashboard -->
-    <div id="dashboard" class="hidden container mx-auto">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold gold-gradient">داشبورد مدیریت</h1>
-            <button onclick="logout()" class="text-red-500 border border-red-500 px-3 py-1 rounded">خروج</button>
-        </div>
-
-        <div class="flex gap-2 overflow-x-auto mb-6">
-            <button onclick="tab('prods')" class="tab-btn active px-4 py-2 rounded border border-[#D4AF37]">محصولات</button>
-            <button onclick="tab('cats')" class="tab-btn px-4 py-2 rounded border border-[#D4AF37]">دسته‌ها</button>
-            <button onclick="tab('orders')" class="tab-btn px-4 py-2 rounded border border-[#D4AF37]">سفارشات</button>
-            <button onclick="tab('backup')" class="tab-btn px-4 py-2 rounded border border-[#D4AF37]">بکاپ</button>
-        </div>
-
-        <div id="prods" class="tab-content">
-            <button onclick="document.getElementById('prodModal').classList.remove('hidden')" class="btn-gold px-4 py-2 rounded mb-4">+ محصول جدید</button>
-            <div id="prodList" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
-        </div>
-
-        <div id="cats" class="tab-content hidden">
-            <button onclick="document.getElementById('catModal').classList.remove('hidden')" class="btn-gold px-4 py-2 rounded mb-4">+ دسته جدید</button>
-            <div id="catList" class="space-y-2"></div>
-        </div>
-
-        <div id="orders" class="tab-content hidden">
-            <div id="orderList" class="space-y-4"></div>
-        </div>
-
-        <div id="backup" class="tab-content hidden">
-            <div class="grid md:grid-cols-2 gap-4">
-                <div class="bg-[#1A1A1A] p-4 rounded border border-[#D4AF37]">
-                    <h3 class="font-bold mb-2">دانلود بکاپ</h3>
-                    <button onclick="dlBackup()" class="btn-gold w-full py-2 rounded">دانلود JSON</button>
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="hidden">
+        <!-- Header -->
+        <header class="bg-[#111]/95 backdrop-blur-md border-b border-[#D4AF37]/20 sticky top-0 z-50">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#B8962D] flex items-center justify-center">
+                            <i class="fas fa-crown text-black"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-lg font-bold gold-gradient">پنل مدیریت</h1>
+                            <p class="text-[10px] text-gray-400">Royal Restaurant</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <a href="/" class="px-4 py-2 rounded-lg gold-border hover:bg-white/5 transition text-sm flex items-center gap-2">
+                            <i class="fas fa-external-link-alt"></i>
+                            مشاهده سایت
+                        </a>
+                        <button onclick="logout()" class="px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition text-sm flex items-center gap-2">
+                            <i class="fas fa-sign-out-alt"></i>
+                            خروج
+                        </button>
+                    </div>
                 </div>
-                <div class="bg-[#1A1A1A] p-4 rounded border border-[#D4AF37]">
-                    <h3 class="font-bold mb-2">ریستور</h3>
-                    <input type="file" id="restoreFile" class="mb-2">
-                    <button onclick="restore()" class="btn-gold w-full py-2 rounded">آپلود</button>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="bg-[#151515] border-b border-white/5">
+            <div class="container mx-auto px-4">
+                <div class="flex gap-1 overflow-x-auto scrollbar-hide py-3">
+                    <button onclick="showTab('dashboard')" class="tab-btn tab-active px-5 py-2 rounded-lg whitespace-nowrap transition-all flex items-center gap-2" data-tab="dashboard">
+                        <i class="fas fa-chart-pie"></i> داشبورد
+                    </button>
+                    <button onclick="showTab('products')" class="tab-btn px-5 py-2 rounded-lg whitespace-nowrap transition-all flex items-center gap-2 gold-border hover:bg-white/5" data-tab="products">
+                        <i class="fas fa-utensils"></i> محصولات
+                    </button>
+                    <button onclick="showTab('categories')" class="tab-btn px-5 py-2 rounded-lg whitespace-nowrap transition-all flex items-center gap-2 gold-border hover:bg-white/5" data-tab="categories">
+                        <i class="fas fa-tags"></i> دسته‌بندی
+                    </button>
+                    <button onclick="showTab('orders')" class="tab-btn px-5 py-2 rounded-lg whitespace-nowrap transition-all flex items-center gap-2 gold-border hover:bg-white/5" data-tab="orders">
+                        <i class="fas fa-shopping-bag"></i> سفارشات
+                    </button>
+                    <button onclick="showTab('backup')" class="tab-btn px-5 py-2 rounded-lg whitespace-nowrap transition-all flex items-center gap-2 gold-border hover:bg-white/5" data-tab="backup">
+                        <i class="fas fa-database"></i> بکاپ
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Content -->
+        <main class="container mx-auto px-4 py-6">
+            <!-- Dashboard Tab -->
+            <div id="dashboardTab" class="tab-content">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="stat-card rounded-2xl p-5 gold-border">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                                <i class="fas fa-shopping-bag text-blue-400 text-xl"></i>
+                            </div>
+                            <span class="text-xs text-gray-500">امروز</span>
+                        </div>
+                        <div class="text-3xl font-bold text-white" id="statOrders">0</div>
+                        <div class="text-sm text-gray-400">کل سفارشات</div>
+                    </div>
+                    <div class="stat-card rounded-2xl p-5 gold-border">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
+                                <i class="fas fa-coins text-green-400 text-xl"></i>
+                            </div>
+                            <span class="text-xs text-gray-500">OMR</span>
+                        </div>
+                        <div class="text-3xl font-bold text-[#D4AF37]" id="statRevenue">0</div>
+                        <div class="text-sm text-gray-400">درآمد کل</div>
+                    </div>
+                    <div class="stat-card rounded-2xl p-5 gold-border">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
+                                <i class="fas fa-box text-purple-400 text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="text-3xl font-bold text-white" id="statProducts">0</div>
+                        <div class="text-sm text-gray-400">محصولات</div>
+                    </div>
+                    <div class="stat-card rounded-2xl p-5 gold-border">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center">
+                                <i class="fas fa-clock text-orange-400 text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="text-3xl font-bold text-orange-400" id="statPending">0</div>
+                        <div class="text-sm text-gray-400">در انتظار</div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders -->
+                <div class="card rounded-2xl p-6">
+                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                        <i class="fas fa-history text-[#D4AF37]"></i>
+                        آخرین سفارشات
+                    </h3>
+                    <div id="recentOrders" class="space-y-3">
+                        <!-- Recent orders will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Tab -->
+            <div id="productsTab" class="tab-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold">مدیریت محصولات</h2>
+                    <button onclick="openProductModal()" class="btn-gold px-5 py-3 rounded-xl flex items-center gap-2">
+                        <i class="fas fa-plus"></i>
+                        محصول جدید
+                    </button>
+                </div>
+                <div id="productsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Products will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Categories Tab -->
+            <div id="categoriesTab" class="tab-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold">مدیریت دسته‌بندی‌ها</h2>
+                    <button onclick="openCategoryModal()" class="btn-gold px-5 py-3 rounded-xl flex items-center gap-2">
+                        <i class="fas fa-plus"></i>
+                        دسته‌بندی جدید
+                    </button>
+                </div>
+                <div id="categoriesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Categories will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Orders Tab -->
+            <div id="ordersTab" class="tab-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold">مدیریت سفارشات</h2>
+                    <div class="flex gap-2">
+                        <select id="orderStatusFilter" onchange="filterOrders()" class="px-4 py-2 rounded-lg">
+                            <option value="all">همه وضعیت‌ها</option>
+                            <option value="pending_payment">در انتظار پرداخت</option>
+                            <option value="confirmed">تأیید شده</option>
+                            <option value="preparing">در حال آماده‌سازی</option>
+                            <option value="shipped">ارسال شده</option>
+                            <option value="delivered">تحویل داده شده</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="ordersList" class="space-y-4">
+                    <!-- Orders will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Backup Tab -->
+            <div id="backupTab" class="tab-content hidden">
+                <h2 class="text-xl font-bold mb-6">بکاپ و بازیابی</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="card rounded-2xl p-6">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-14 h-14 rounded-xl bg-green-500/20 flex items-center justify-center">
+                                <i class="fas fa-download text-green-400 text-2xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg">دانلود بکاپ</h3>
+                                <p class="text-sm text-gray-400">دانلود کامل اطلاعات سایت</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-4">شامل محصولات، دسته‌بندی‌ها و سفارشات</p>
+                        <button onclick="downloadBackup()" class="w-full btn-success py-3 rounded-xl font-bold flex items-center justify-center gap-2">
+                            <i class="fas fa-file-download"></i>
+                            دانلود فایل JSON
+                        </button>
+                    </div>
+                    <div class="card rounded-2xl p-6">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-14 h-14 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                                <i class="fas fa-upload text-blue-400 text-2xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg">بازیابی بکاپ</h3>
+                                <p class="text-sm text-gray-400">آپلود و بازیابی اطلاعات</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-4">فایل JSON بکاپ را انتخاب کنید</p>
+                        <input type="file" id="backupFileInput" accept=".json" class="hidden" onchange="restoreBackup(event)">
+                        <button onclick="document.getElementById('backupFileInput').click()" class="w-full btn-info py-3 rounded-xl font-bold flex items-center justify-center gap-2">
+                            <i class="fas fa-file-upload"></i>
+                            انتخاب و بازیابی
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="fixed inset-0 z-[150] hidden overflow-y-auto">
+        <div class="modal-backdrop absolute inset-0" onclick="closeProductModal()"></div>
+        <div class="min-h-screen flex items-center justify-center p-4">
+            <div class="relative bg-[#1A1A1A] rounded-2xl gold-border w-full max-w-lg animate-fade-in shadow-2xl max-h-[90vh] overflow-y-auto">
+                <div class="sticky top-0 bg-[#1A1A1A] p-4 border-b border-white/10 flex items-center justify-between z-10 rounded-t-2xl">
+                    <h3 class="text-xl font-bold gold-gradient" id="productModalTitle">افزودن محصول</h3>
+                    <button onclick="closeProductModal()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-red-500/20">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="productForm" class="p-5 space-y-4">
+                    <input type="hidden" id="productId">
+                    
+                    <div class="grid grid-cols-1 gap-4">
+                        <div>
+                            <label class="text-sm text-gray-400 block mb-1">نام (فارسی) *</label>
+                            <input type="text" id="productNameFa" required class="w-full p-3 rounded-xl">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-400 block mb-1">نام (انگلیسی) *</label>
+                            <input type="text" id="productNameEn" required class="w-full p-3 rounded-xl" dir="ltr">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-400 block mb-1">نام (عربی) *</label>
+                            <input type="text" id="productNameAr" required class="w-full p-3 rounded-xl">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="text-sm text-gray-400 block mb-1">توضیحات (فارسی)</label>
+                        <textarea id="productDescFa" rows="2" class="w-full p-3 rounded-xl resize-none"></textarea>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-sm text-gray-400 block mb-1">قیمت (OMR) *</label>
+                            <input type="number" id="productPrice" step="0.01" required class="w-full p-3 rounded-xl" dir="ltr">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-400 block mb-1">تخفیف (%)</label>
+                            <input type="number" id="productDiscount" min="0" max="100" value="0" class="w-full p-3 rounded-xl" dir="ltr">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="text-sm text-gray-400 block mb-1">دسته‌بندی *</label>
+                        <select id="productCategory" required class="w-full p-3 rounded-xl">
+                            <!-- Options loaded dynamically -->
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="text-sm text-gray-400 block mb-1">لینک تصویر *</label>
+                        <input type="url" id="productImage" required class="w-full p-3 rounded-xl" dir="ltr" placeholder="https://...">
+                    </div>
+                    
+                    <div id="productImagePreview" class="hidden">
+                        <img src="" alt="Preview" class="w-full h-40 object-cover rounded-xl">
+                    </div>
+                    
+                    <button type="submit" class="w-full btn-gold py-4 rounded-xl font-bold text-lg">
+                        <i class="fas fa-save ml-2"></i>
+                        ذخیره محصول
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div id="categoryModal" class="fixed inset-0 z-[150] hidden">
+        <div class="modal-backdrop absolute inset-0" onclick="closeCategoryModal()"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#1A1A1A] rounded-2xl gold-border w-full max-w-md p-6 animate-fade-in shadow-2xl">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold gold-gradient" id="categoryModalTitle">افزودن دسته‌بندی</h3>
+                <button onclick="closeCategoryModal()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="categoryForm" class="space-y-4">
+                <input type="hidden" id="categoryId">
+                <div>
+                    <label class="text-sm text-gray-400 block mb-1">نام (فارسی) *</label>
+                    <input type="text" id="categoryNameFa" required class="w-full p-3 rounded-xl">
+                </div>
+                <div>
+                    <label class="text-sm text-gray-400 block mb-1">نام (انگلیسی) *</label>
+                    <input type="text" id="categoryNameEn" required class="w-full p-3 rounded-xl" dir="ltr">
+                </div>
+                <div>
+                    <label class="text-sm text-gray-400 block mb-1">نام (عربی) *</label>
+                    <input type="text" id="categoryNameAr" required class="w-full p-3 rounded-xl">
+                </div>
+                <button type="submit" class="w-full btn-gold py-4 rounded-xl font-bold">
+                    <i class="fas fa-save ml-2"></i>
+                    ذخیره
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Order Detail Modal -->
+    <div id="orderDetailModal" class="fixed inset-0 z-[150] hidden overflow-y-auto">
+        <div class="modal-backdrop absolute inset-0" onclick="closeOrderDetail()"></div>
+        <div class="min-h-screen flex items-center justify-center p-4">
+            <div class="relative bg-[#1A1A1A] rounded-2xl gold-border w-full max-w-2xl animate-fade-in shadow-2xl max-h-[90vh] overflow-y-auto">
+                <div class="sticky top-0 bg-[#1A1A1A] p-4 border-b border-white/10 flex items-center justify-between z-10 rounded-t-2xl">
+                    <h3 class="text-xl font-bold gold-gradient">جزئیات سفارش</h3>
+                    <button onclick="closeOrderDetail()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div id="orderDetailContent" class="p-5">
+                    <!-- Order details loaded here -->
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modals -->
-    <div id="prodModal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center z-40">
-        <div class="bg-[#1A1A1A] p-6 rounded w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <h3 class="font-bold mb-4">محصول</h3>
-            <form id="prodForm" class="space-y-2">
-                <input id="pid" type="hidden">
-                <input id="pname" placeholder="نام (فارسی)" required>
-                <input id="pename" placeholder="Name (English)" required>
-                <input id="paname" placeholder="الاسم (Arabic)" required>
-                <input id="pprice" type="number" step="0.1" placeholder="قیمت" required>
-                <select id="pcat"></select>
-                <input id="pimg" placeholder="لینک عکس" required>
-                <div class="flex gap-2 pt-2">
-                    <button type="button" onclick="document.getElementById('prodModal').classList.add('hidden')" class="flex-1 border border-white p-2 rounded">لغو</button>
-                    <button type="submit" class="flex-1 btn-gold p-2 rounded">ذخیره</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <div id="catModal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center z-40">
-        <div class="bg-[#1A1A1A] p-6 rounded w-full max-w-sm">
-            <h3 class="font-bold mb-4">دسته‌بندی</h3>
-            <form id="catForm" class="space-y-2">
-                <input id="cname" placeholder="نام (فارسی)" required>
-                <input id="cename" placeholder="Name (English)" required>
-                <input id="caname" placeholder="الاسم (Arabic)" required>
-                <button type="submit" class="w-full btn-gold p-2 rounded">ذخیره</button>
-            </form>
-        </div>
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#222] text-white px-6 py-3 rounded-full gold-border shadow-2xl z-[200] hidden transition-all transform scale-90 opacity-0 flex items-center gap-3">
+        <i id="toastIcon" class="fas fa-check-circle text-green-500"></i>
+        <span id="toastMsg" class="text-sm font-bold"></span>
     </div>
 
     <script>
-        let token = localStorage.getItem('admToken');
-        let data = {};
+        // ============ State ============
+        let adminToken = localStorage.getItem('adminToken') || '';
+        let data = { products: [], categories: [], orders: [] };
+        let currentOrderFilter = 'all';
 
-        if(token) init();
+        // ============ Initialization ============
+        document.addEventListener('DOMContentLoaded', () => {
+            if (adminToken) {
+                verifyToken();
+            }
+        });
 
-        async function login() {
-            const t = document.getElementById('token').value;
+        // ============ Authentication ============
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const token = document.getElementById('adminTokenInput').value;
+            
             try {
                 const res = await fetch('/api/admin/login', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({token: t})
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token })
                 });
-                if(res.ok) {
-                    token = t; localStorage.setItem('admToken', t);
-                    init();
-                } else alert('توکن اشتباه است');
-            } catch { alert('خطا'); }
-        }
+                
+                if (res.ok) {
+                    adminToken = token;
+                    localStorage.setItem('adminToken', token);
+                    document.getElementById('loginError').classList.add('hidden');
+                    showDashboard();
+                } else {
+                    document.getElementById('loginError').classList.remove('hidden');
+                }
+            } catch (error) {
+                showToast('خطا در اتصال به سرور', 'error');
+            }
+        });
 
-        function logout() { localStorage.removeItem('admToken'); location.reload(); }
-
-        async function init() {
+        async function verifyToken() {
             try {
-                const res = await fetch('/api/admin/full-data', {headers: {'X-Admin-Token': token}});
-                if(!res.ok) throw new Error();
-                data = await res.json();
-                document.getElementById('login').classList.add('hidden');
-                document.getElementById('dashboard').classList.remove('hidden');
-                render();
+                const res = await fetch('/api/admin/full-data', {
+                    headers: { 'X-Admin-Token': adminToken }
+                });
+                
+                if (res.ok) {
+                    showDashboard();
+                } else {
+                    localStorage.removeItem('adminToken');
+                    adminToken = '';
+                }
             } catch {
-                localStorage.removeItem('admToken');
-                document.getElementById('login').classList.remove('hidden');
+                localStorage.removeItem('adminToken');
             }
         }
 
-        function render() {
-            document.getElementById('prodList').innerHTML = data.products.map(p => `
-                <div class="bg-[#222] p-3 rounded border border-white/10 flex gap-2">
-                    <img src="${p.image}" class="w-16 h-16 object-cover rounded">
-                    <div>
-                        <div class="font-bold">${p.name.fa}</div>
-                        <div class="text-[#D4AF37]">${p.price} OMR</div>
-                        <button onclick="delProd('${p.id}')" class="text-red-500 text-sm mt-1">حذف</button>
+        function logout() {
+            localStorage.removeItem('adminToken');
+            adminToken = '';
+            location.reload();
+        }
+
+        async function showDashboard() {
+            document.getElementById('loginModal').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            await loadData();
+        }
+
+        // ============ Data Loading ============
+        async function loadData() {
+            try {
+                const res = await fetch('/api/admin/full-data', {
+                    headers: { 'X-Admin-Token': adminToken }
+                });
+                
+                if (!res.ok) throw new Error('Unauthorized');
+                data = await res.json();
+                
+                renderDashboard();
+                renderProducts();
+                renderCategories();
+                renderOrders();
+            } catch (error) {
+                showToast('خطا در بارگذاری اطلاعات', 'error');
+            }
+        }
+
+        // ============ Dashboard ============
+        function renderDashboard() {
+            // Stats
+            document.getElementById('statOrders').textContent = data.orders.length;
+            document.getElementById('statProducts').textContent = data.products.length;
+            
+            const revenue = data.orders
+                .filter(o => o.paid)
+                .reduce((sum, o) => sum + (o.total_omr || 0), 0);
+            document.getElementById('statRevenue').textContent = revenue.toFixed(2);
+            
+            const pending = data.orders.filter(o => o.status === 'pending_payment' || o.status === 'confirmed').length;
+            document.getElementById('statPending').textContent = pending;
+            
+            // Recent Orders
+            const recentContainer = document.getElementById('recentOrders');
+            const recent = data.orders.slice(-5).reverse();
+            
+            if (recent.length === 0) {
+                recentContainer.innerHTML = '<div class="text-center text-gray-500 py-8">سفارشی ثبت نشده</div>';
+                return;
+            }
+            
+            recentContainer.innerHTML = recent.map(o => `
+                <div class="flex items-center justify-between p-4 rounded-xl bg-[#222] gold-border cursor-pointer hover:bg-white/5 transition" onclick="openOrderDetail('${o.id}')">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-[#D4AF37]/20 flex items-center justify-center">
+                            <i class="fas fa-receipt text-[#D4AF37]"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold">${o.customer.firstName} ${o.customer.lastName}</div>
+                            <div class="text-xs text-gray-400">#${o.id.slice(-6)}</div>
+                        </div>
                     </div>
+                    <div class="text-left">
+                        <div class="font-bold text-[#D4AF37]">${(o.total_omr || 0).toFixed(2)} OMR</div>
+                        <span class="text-xs px-2 py-1 rounded ${getStatusClass(o.status)}">${getStatusText(o.status)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ============ Products ============
+        function renderProducts() {
+            const container = document.getElementById('productsList');
+            
+            if (data.products.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center text-gray-500 py-10">محصولی ثبت نشده</div>';
+                return;
+            }
+            
+            container.innerHTML = data.products.map(p => `
+                <div class="card rounded-2xl overflow-hidden">
+                    <div class="relative h-40">
+                        <img src="${p.image}" alt="${p.name.fa}" class="w-full h-full object-cover">
+                        ${p.discount ? `<div class="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">${p.discount}%</div>` : ''}
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold mb-1">${p.name.fa}</h4>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="text-[#D4AF37] font-bold">${p.price} OMR</span>
+                            <span class="text-xs text-gray-400">| ${getCategoryName(p.category)}</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="editProduct('${p.id}')" class="flex-1 py-2 rounded-lg gold-border hover:bg-white/5 transition text-sm">
+                                <i class="fas fa-edit ml-1"></i> ویرایش
+                            </button>
+                            <button onclick="deleteProduct('${p.id}')" class="flex-1 py-2 rounded-lg btn-danger text-sm">
+                                <i class="fas fa-trash ml-1"></i> حذف
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getCategoryName(catId) {
+            const cat = data.categories.find(c => c.id === catId);
+            return cat ? cat.name.fa : 'بدون دسته';
+        }
+
+        function openProductModal(product = null) {
+            document.getElementById('productModalTitle').textContent = product ? 'ویرایش محصول' : 'افزودن محصول';
+            document.getElementById('productForm').reset();
+            document.getElementById('productId').value = '';
+            document.getElementById('productImagePreview').classList.add('hidden');
+            
+            // Load categories
+            const select = document.getElementById('productCategory');
+            select.innerHTML = data.categories.map(c => `<option value="${c.id}">${c.name.fa}</option>`).join('');
+            
+            if (product) {
+                document.getElementById('productId').value = product.id;
+                document.getElementById('productNameFa').value = product.name.fa;
+                document.getElementById('productNameEn').value = product.name.en;
+                document.getElementById('productNameAr').value = product.name.ar;
+                document.getElementById('productDescFa').value = product.description?.fa || '';
+                document.getElementById('productPrice').value = product.price;
+                document.getElementById('productDiscount').value = product.discount || 0;
+                document.getElementById('productCategory').value = product.category;
+                document.getElementById('productImage').value = product.image;
+            }
+            
+            document.getElementById('productModal').classList.remove('hidden');
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').classList.add('hidden');
+        }
+
+        function editProduct(id) {
+            const product = data.products.find(p => p.id === id);
+            if (product) openProductModal(product);
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm('آیا از حذف این محصول اطمینان دارید؟')) return;
+            
+            try {
+                const res = await fetch(`/api/admin/product/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'X-Admin-Token': adminToken }
+                });
+                
+                if (res.ok) {
+                    showToast('محصول حذف شد');
+                    await loadData();
+                } else {
+                    throw new Error();
+                }
+            } catch {
+                showToast('خطا در حذف محصول', 'error');
+            }
+        }
+
+        document.getElementById('productForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('productId').value || Date.now().toString();
+            const product = {
+                id,
+                name: {
+                    fa: document.getElementById('productNameFa').value,
+                    en: document.getElementById('productNameEn').value,
+                    ar: document.getElementById('productNameAr').value
+                },
+                description: {
+                    fa: document.getElementById('productDescFa').value,
+                    en: document.getElementById('productDescFa').value,
+                    ar: document.getElementById('productDescFa').value
+                },
+                price: parseFloat(document.getElementById('productPrice').value),
+                discount: parseInt(document.getElementById('productDiscount').value) || 0,
+                category: document.getElementById('productCategory').value,
+                image: document.getElementById('productImage').value
+            };
+            
+            try {
+                const res = await fetch('/api/admin/product', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Token': adminToken
+                    },
+                    body: JSON.stringify(product)
+                });
+                
+                if (res.ok) {
+                    showToast('محصول ذخیره شد');
+                    closeProductModal();
+                    await loadData();
+                } else {
+                    throw new Error();
+                }
+            } catch {
+                showToast('خطا در ذخیره محصول', 'error');
+            }
+        });
+
+        // ============ Categories ============
+        function renderCategories() {
+            const container = document.getElementById('categoriesList');
+            
+            if (data.categories.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center text-gray-500 py-10">دسته‌بندی ثبت نشده</div>';
+                return;
+            }
+            
+            container.innerHTML = data.categories.map(c => `
+                <div class="card rounded-2xl p-5">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-[#D4AF37]/20 flex items-center justify-center">
+                            <i class="fas fa-tag text-[#D4AF37] text-xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold">${c.name.fa}</h4>
+                            <p class="text-xs text-gray-400">${c.name.en} | ${c.name.ar}</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="editCategory('${c.id}')" class="flex-1 py-2 rounded-lg gold-border hover:bg-white/5 transition text-sm">
+                            <i class="fas fa-edit ml-1"></i> ویرایش
+                        </button>
+                        <button onclick="deleteCategory('${c.id}')" class="flex-1 py-2 rounded-lg btn-danger text-sm">
+                            <i class="fas fa-trash ml-1"></i> حذف
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openCategoryModal(category = null) {
+            document.getElementById('categoryModalTitle').textContent = category ? 'ویرایش دسته‌بندی' : 'افزودن دسته‌بندی';
+            document.getElementById('categoryForm').reset();
+            document.getElementById('categoryId').value = '';
+            
+            if (category) {
+                document.getElementById('categoryId').value = category.id;
+                document.getElementById('categoryNameFa').value = category.name.fa;
+                document.getElementById('categoryNameEn').value = category.name.en;
+                document.getElementById('categoryNameAr').value = category.name.ar;
+            }
+            
+            document.getElementById('categoryModal').classList.remove('hidden');
+        }
+
+        function closeCategoryModal() {
+            document.getElementById('categoryModal').classList.add('hidden');
+        }
+
+        function editCategory(id) {
+            const category = data.categories.find(c => c.id === id);
+            if (category) openCategoryModal(category);
+        }
+
+        async function deleteCategory(id) {
+            if (!confirm('آیا از حذف این دسته‌بندی اطمینان دارید؟')) return;
+            
+            try {
+                const res = await fetch(`/api/admin/category/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'X-Admin-Token': adminToken }
+                });
+                
+                if (res.ok) {
+                    showToast('دسته‌بندی حذف شد');
+                    await loadData();
+                } else {
+                    throw new Error();
+                }
+            } catch {
+                showToast('خطا در حذف دسته‌بندی', 'error');
+            }
+        }
+
+        document.getElementById('categoryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const id = document.getElementById('categoryId').value || Date.now().toString();
+            const category = {
+                id,
+                name: {
+                    fa: document.getElementById('categoryNameFa').value,
+                    en: document.getElementById('categoryNameEn').value,
+                    ar: document.getElementById('categoryNameAr').value
+                }
+            };
+            
+            try {
+                const res = await fetch('/api/admin/category', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Token': adminToken
+                    },
+                    body: JSON.stringify(category)
+                });
+                
+                if (res.ok) {
+                    showToast('دسته‌بندی ذخیره شد');
+                    closeCategoryModal();
+                    await loadData();
+                } else {
+                    throw new Error();
+                }
+            } catch {
+                showToast('خطا در ذخیره دسته‌بندی', 'error');
+            }
+        });
+
+        // ============ Orders ============
+        function renderOrders() {
+            const container = document.getElementById('ordersList');
+            let orders = [...data.orders].reverse();
+            
+            if (currentOrderFilter !== 'all') {
+                orders = orders.filter(o => o.status === currentOrderFilter);
+            }
+            
+            if (orders.length === 0) {
+                container.innerHTML = '<div class="text-center text-gray-500 py-10">سفارشی یافت نشد</div>';
+                return;
+            }
+            
+            container.innerHTML = orders.map(o => `
+                <div class="card rounded-2xl p-5">
+                    <div class="flex flex-wrap items-start justify-between gap-4 mb-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-[#D4AF37]/20 flex items-center justify-center">
+                                <i class="fas fa-shopping-bag text-[#D4AF37] text-xl"></i>
+                            </div>
+                            <div>
+                                <div class="font-bold">${o.customer.firstName} ${o.customer.lastName}</div>
+                                <div class="text-xs text-gray-400">#${o.id} | ${new Date(o.date).toLocaleDateString('fa-IR')}</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <select onchange="updateOrderStatus('${o.id}', this.value)" class="px-3 py-2 rounded-lg text-sm ${getStatusClass(o.status)}">
+                                <option value="pending_payment" ${o.status === 'pending_payment' ? 'selected' : ''}>در انتظار پرداخت</option>
+                                <option value="confirmed" ${o.status === 'confirmed' ? 'selected' : ''}>تأیید شده</option>
+                                <option value="preparing" ${o.status === 'preparing' ? 'selected' : ''}>در حال آماده‌سازی</option>
+                                <option value="shipped" ${o.status === 'shipped' ? 'selected' : ''}>ارسال شده</option>
+                                <option value="delivered" ${o.status === 'delivered' ? 'selected' : ''}>تحویل داده شده</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 text-sm">
+                        <div class="bg-[#222] p-3 rounded-lg">
+                            <div class="text-gray-400 text-xs mb-1">تلفن</div>
+                            <div class="font-mono" dir="ltr">${o.customer.phone}</div>
+                        </div>
+                        <div class="bg-[#222] p-3 rounded-lg">
+                            <div class="text-gray-400 text-xs mb-1">نوع تحویل</div>
+                            <div>${o.customer.deliveryType === 'delivery' ? '🛵 ارسال' : '🥡 حضوری'}</div>
+                        </div>
+                        <div class="bg-[#222] p-3 rounded-lg">
+                            <div class="text-gray-400 text-xs mb-1">راه ارتباط</div>
+                            <div>${o.customer.contactMethod === 'whatsapp' ? 'واتساپ' : 'تلگرام'}</div>
+                        </div>
+                        <div class="bg-[#222] p-3 rounded-lg">
+                            <div class="text-gray-400 text-xs mb-1">مبلغ</div>
+                            <div class="text-[#D4AF37] font-bold">${(o.total_omr || 0).toFixed(2)} OMR</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="openOrderDetail('${o.id}')" class="px-4 py-2 rounded-lg gold-border hover:bg-white/5 transition text-sm flex items-center gap-2">
+                            <i class="fas fa-eye"></i> جزئیات
+                        </button>
+                        ${o.customer.location ? `
+                            <a href="https://www.google.com/maps?q=${o.customer.location}" target="_blank" class="px-4 py-2 rounded-lg btn-info text-sm flex items-center gap-2">
+                                <i class="fas fa-map-marker-alt"></i> لوکیشن
+                            </a>
+                        ` : ''}
+                        ${o.customer.phone ? `
+                            <a href="https://wa.me/${o.customer.phone.replace(/[^0-9]/g, '')}" target="_blank" class="px-4 py-2 rounded-lg btn-success text-sm flex items-center gap-2">
+                                <i class="fab fa-whatsapp"></i> پیام
+                            </a>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterOrders() {
+            currentOrderFilter = document.getElementById('orderStatusFilter').value;
+            renderOrders();
+        }
+
+        async function updateOrderStatus(id, status) {
+            try {
+                const res = await fetch('/api/admin/order-status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Token': adminToken
+                    },
+                    body: JSON.stringify({ id, status })
+                });
+                
+                if (res.ok) {
+                    showToast('وضعیت سفارش بروزرسانی شد');
+                    await loadData();
+                } else {
+                    throw new Error();
+                }
+            } catch {
+                showToast('خطا در بروزرسانی وضعیت', 'error');
+            }
+        }
+
+        function openOrderDetail(id) {
+            const order = data.orders.find(o => o.id === id);
+            if (!order) return;
+            
+            const itemsHtml = order.items.map(i => `
+                <div class="flex justify-between items-center py-2 border-b border-white/5">
+                    <div>
+                        <span class="font-bold">${i.name.fa}</span>
+                        <span class="text-gray-400 text-sm">× ${i.quantity}</span>
+                    </div>
+                    <span class="text-[#D4AF37]">${(i.price * i.quantity).toFixed(2)} OMR</span>
                 </div>
             `).join('');
             
-            const catsHtml = data.categories.map(c => `
-                <div class="flex justify-between bg-[#222] p-2 rounded">
-                    <span>${c.name.fa}</span>
-                    <button onclick="delCat('${c.id}')" class="text-red-500">x</button>
-                </div>
-            `).join('');
-            document.getElementById('catList').innerHTML = catsHtml;
-            document.getElementById('pcat').innerHTML = data.categories.map(c => `<option value="${c.id}">${c.name.fa}</option>`).join('');
-
-            document.getElementById('orderList').innerHTML = data.orders.slice().reverse().map(o => `
-                <div class="bg-[#222] p-4 rounded border border-white/10">
-                    <div class="flex justify-between mb-2">
-                        <span class="font-bold">#${o.id}</span>
-                        <select onchange="setStatus('${o.id}', this.value)" class="w-auto p-1 text-sm">
-                            <option value="pending_payment" ${o.status==='pending_payment'?'selected':''}>معلق</option>
-                            <option value="confirmed" ${o.status==='confirmed'?'selected':''}>تأیید</option>
-                            <option value="shipped" ${o.status==='shipped'?'selected':''}>ارسال</option>
-                        </select>
+            document.getElementById('orderDetailContent').innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-4 bg-[#222] rounded-xl">
+                        <div>
+                            <div class="text-sm text-gray-400">شماره سفارش</div>
+                            <div class="font-mono font-bold">#${order.id}</div>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-sm ${getStatusClass(order.status)}">${getStatusText(order.status)}</span>
                     </div>
-                    <div class="text-sm text-gray-400">
-                        ${o.customer.firstName} ${o.customer.lastName} | ${o.total_omr.toFixed(2)} OMR
+                    
+                    <div class="p-4 bg-[#222] rounded-xl">
+                        <h4 class="font-bold mb-3 flex items-center gap-2">
+                            <i class="fas fa-user text-[#D4AF37]"></i> مشخصات مشتری
+                        </h4>
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <div><span class="text-gray-400">نام:</span> ${order.customer.firstName} ${order.customer.lastName}</div>
+                            <div><span class="text-gray-400">تلفن:</span> <span dir="ltr">${order.customer.phone}</span></div>
+                            <div class="col-span-2"><span class="text-gray-400">آدرس:</span> ${order.customer.address}</div>
+                            ${order.customer.notes ? `<div class="col-span-2"><span class="text-gray-400">توضیحات:</span> ${order.customer.notes}</div>` : ''}
+                        </div>
                     </div>
-                    ${o.customer.location ? `<a href="https://maps.google.com/?q=${o.customer.location}" target="_blank" class="text-blue-400 text-xs">📍 لوکیشن</a>` : ''}
+                    
+                    <div class="p-4 bg-[#222] rounded-xl">
+                        <h4 class="font-bold mb-3 flex items-center gap-2">
+                            <i class="fas fa-shopping-cart text-[#D4AF37]"></i> محصولات
+                        </h4>
+                        ${itemsHtml}
+                        <div class="flex justify-between items-center pt-3 mt-3 border-t border-white/10">
+                            <span class="font-bold">مجموع:</span>
+                            <span class="text-xl font-bold text-[#D4AF37]">${(order.total_omr || 0).toFixed(2)} OMR</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-3">
+                        ${order.customer.location ? `
+                            <a href="https://www.google.com/maps?q=${order.customer.location}" target="_blank" class="flex-1 py-3 rounded-xl btn-info font-bold text-center">
+                                <i class="fas fa-map-marker-alt ml-2"></i> مشاهده لوکیشن
+                            </a>
+                        ` : ''}
+                        <a href="https://wa.me/${order.customer.phone?.replace(/[^0-9]/g, '')}" target="_blank" class="flex-1 py-3 rounded-xl btn-success font-bold text-center">
+                            <i class="fab fa-whatsapp ml-2"></i> ارسال پیام
+                        </a>
+                    </div>
                 </div>
-            `).join('');
+            `;
+            
+            document.getElementById('orderDetailModal').classList.remove('hidden');
         }
 
-        function tab(t) {
-            document.querySelectorAll('.tab-content').forEach(e=>e.classList.add('hidden'));
-            document.getElementById(t).classList.remove('hidden');
-            document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-            event.target.classList.add('active');
+        function closeOrderDetail() {
+            document.getElementById('orderDetailModal').classList.add('hidden');
         }
 
-        // API Calls
-        async function api(url, method, body) {
-            await fetch(url, {
-                method, headers: {'Content-Type': 'application/json', 'X-Admin-Token': token},
-                body: JSON.stringify(body)
+        function getStatusClass(status) {
+            const classes = {
+                'pending_payment': 'status-pending',
+                'confirmed': 'status-confirmed',
+                'preparing': 'status-preparing',
+                'shipped': 'status-shipped',
+                'delivered': 'status-delivered'
+            };
+            return classes[status] || 'status-pending';
+        }
+
+        function getStatusText(status) {
+            const texts = {
+                'pending_payment': 'در انتظار پرداخت',
+                'confirmed': 'تأیید شده',
+                'preparing': 'در حال آماده‌سازی',
+                'shipped': 'ارسال شده',
+                'delivered': 'تحویل داده شده'
+            };
+            return texts[status] || status;
+        }
+
+        // ============ Backup ============
+        function downloadBackup() {
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('بکاپ دانلود شد');
+        }
+
+        async function restoreBackup(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                const res = await fetch('/api/admin/restore', {
+                    method: 'POST',
+                    headers: { 'X-Admin-Token': adminToken },
+                    body: formData
+                });
+                
+                if (res.ok) {
+                    showToast('بکاپ با موفقیت بازیابی شد');
+                    await loadData();
+                } else {
+                    throw new Error();
+                }
+            } catch {
+                showToast('خطا در بازیابی بکاپ', 'error');
+            }
+            
+            event.target.value = '';
+        }
+
+        // ============ Tabs ============
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('tab-active');
+                btn.classList.add('gold-border', 'hover:bg-white/5');
             });
-            init();
+            
+            document.getElementById(`${tabName}Tab`).classList.remove('hidden');
+            const activeBtn = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('tab-active');
+                activeBtn.classList.remove('gold-border', 'hover:bg-white/5');
+            }
         }
 
-        document.getElementById('prodForm').addEventListener('submit', e => {
-            e.preventDefault();
-            const p = {
-                id: Date.now().toString(),
-                name: {fa: document.getElementById('pname').value, en: document.getElementById('pename').value, ar: document.getElementById('paname').value},
-                description: {fa:'',en:'',ar:''},
-                price: parseFloat(document.getElementById('pprice').value),
-                category: document.getElementById('pcat').value,
-                image: document.getElementById('pimg').value
-            };
-            api('/api/admin/product', 'POST', p);
-            document.getElementById('prodModal').classList.add('hidden');
-        });
-
-        document.getElementById('catForm').addEventListener('submit', e => {
-            e.preventDefault();
-            const c = {
-                id: Date.now().toString(),
-                name: {fa: document.getElementById('cname').value, en: document.getElementById('cename').value, ar: document.getElementById('caname').value}
-            };
-            api('/api/admin/category', 'POST', c);
-            document.getElementById('catModal').classList.add('hidden');
-        });
-
-        function delProd(id) { if(confirm('حذف؟')) api(`/api/admin/product/${id}`, 'DELETE'); }
-        function delCat(id) { if(confirm('حذف؟')) api(`/api/admin/category/${id}`, 'DELETE'); }
-        function setStatus(id, s) { api('/api/admin/order-status', 'POST', {id, status: s}); }
-        
-        function dlBackup() { window.open(`/api/admin/backup?token=${token}`); }
-        async function restore() {
-            const f = document.getElementById('restoreFile').files[0];
-            if(!f) return;
-            const fd = new FormData(); fd.append('file', f);
-            await fetch('/api/admin/restore', {method:'POST', headers:{'X-Admin-Token':token}, body: fd});
-            init();
+        // ============ Toast ============
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            document.getElementById('toastMsg').textContent = msg;
+            
+            icon.className = type === 'success' 
+                ? 'fas fa-check-circle text-green-500' 
+                : 'fas fa-exclamation-circle text-red-500';
+            
+            toast.classList.remove('hidden', 'scale-90', 'opacity-0');
+            toast.classList.add('scale-100', 'opacity-100');
+            
+            setTimeout(() => {
+                toast.classList.remove('scale-100', 'opacity-100');
+                toast.classList.add('scale-90', 'opacity-0');
+                setTimeout(() => toast.classList.add('hidden'), 300);
+            }, 3000);
         }
     </script>
 </body>

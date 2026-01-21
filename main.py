@@ -26,7 +26,7 @@ SUCCESS_FILE = os.path.join(BASE_DIR, 'success.html')
 ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "mamad1390") # Default for safety
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
 PAYPAL_SECRET = os.getenv("PAYPAL_SECRET")
-PAYPAL_SANDBOX = os.getenv("PAYPAL_SANDBOX", "False").lower() == "true"
+PAYPAL_SANDBOX = os.getenv("PAYPAL_SANDBOX", "true").lower() == "true"
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
