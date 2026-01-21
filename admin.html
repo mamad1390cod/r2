@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royal Admin</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { font-family: 'Vazirmatn', sans-serif; }
+        body { background: #0D0D0D; color: white; }
+        .gold-gradient { background: linear-gradient(135deg, #D4AF37 0%, #F4E4BA 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .btn-gold { background: #D4AF37; color: black; font-weight: bold; transition: 0.2s; }
+        .btn-gold:hover { background: #F4E4BA; }
+        input, select { background: #2D2D2D; border: 1px solid #D4AF37; color: white; padding: 0.5rem; border-radius: 0.5rem; width: 100%; }
+        .tab-btn.active { background: #D4AF37; color: black; }
+    </style>
+</head>
+<body class="p-4">
+    <!-- Login -->
+    <div id="login" class="fixed inset-0 bg-black z-50 flex items-center justify-center">
+        <div class="bg-[#1A1A1A] p-8 rounded-2xl border border-[#D4AF37] w-80 text-center">
+            <h2 class="text-2xl font-bold gold-gradient mb-4">پنل مدیریت</h2>
+            <input type="password" id="token" placeholder="Admin Token" class="mb-4 text-center">
+            <button onclick="login()" class="w-full btn-gold py-2 rounded">ورود</button>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="hidden container mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold gold-gradient">داشبورد مدیریت</h1>
+            <button onclick="logout()" class="text-red-500 border border-red-500 px-3 py-1 rounded">خروج</button>
+        </div>
+
+        <div class="flex gap-2 overflow-x-auto mb-6">
+            <button onclick="tab('prods')" class="tab-btn active px-4 py-2 rounded border border-[#D4AF37]">محصولات</button>
+            <button onclick="tab('cats')" class="tab-btn px-4 py-2 rounded border border-[#D4AF37]">دسته‌ها</button>
+            <button onclick="tab('orders')" class="tab-btn px-4 py-2 rounded border border-[#D4AF37]">سفارشات</button>
+            <button onclick="tab('backup')" class="tab-btn px-4 py-2 rounded border border-[#D4AF37]">بکاپ</button>
+        </div>
+
+        <div id="prods" class="tab-content">
+            <button onclick="document.getElementById('prodModal').classList.remove('hidden')" class="btn-gold px-4 py-2 rounded mb-4">+ محصول جدید</button>
+            <div id="prodList" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+        </div>
+
+        <div id="cats" class="tab-content hidden">
+            <button onclick="document.getElementById('catModal').classList.remove('hidden')" class="btn-gold px-4 py-2 rounded mb-4">+ دسته جدید</button>
+            <div id="catList" class="space-y-2"></div>
+        </div>
+
+        <div id="orders" class="tab-content hidden">
+            <div id="orderList" class="space-y-4"></div>
+        </div>
+
+        <div id="backup" class="tab-content hidden">
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="bg-[#1A1A1A] p-4 rounded border border-[#D4AF37]">
+                    <h3 class="font-bold mb-2">دانلود بکاپ</h3>
+                    <button onclick="dlBackup()" class="btn-gold w-full py-2 rounded">دانلود JSON</button>
+                </div>
+                <div class="bg-[#1A1A1A] p-4 rounded border border-[#D4AF37]">
+                    <h3 class="font-bold mb-2">ریستور</h3>
+                    <input type="file" id="restoreFile" class="mb-2">
+                    <button onclick="restore()" class="btn-gold w-full py-2 rounded">آپلود</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="prodModal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center z-40">
+        <div class="bg-[#1A1A1A] p-6 rounded w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <h3 class="font-bold mb-4">محصول</h3>
+            <form id="prodForm" class="space-y-2">
+                <input id="pid" type="hidden">
+                <input id="pname" placeholder="نام (فارسی)" required>
+                <input id="pename" placeholder="Name (English)" required>
+                <input id="paname" placeholder="الاسم (Arabic)" required>
+                <input id="pprice" type="number" step="0.1" placeholder="قیمت" required>
+                <select id="pcat"></select>
+                <input id="pimg" placeholder="لینک عکس" required>
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="document.getElementById('prodModal').classList.add('hidden')" class="flex-1 border border-white p-2 rounded">لغو</button>
+                    <button type="submit" class="flex-1 btn-gold p-2 rounded">ذخیره</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="catModal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center z-40">
+        <div class="bg-[#1A1A1A] p-6 rounded w-full max-w-sm">
+            <h3 class="font-bold mb-4">دسته‌بندی</h3>
+            <form id="catForm" class="space-y-2">
+                <input id="cname" placeholder="نام (فارسی)" required>
+                <input id="cename" placeholder="Name (English)" required>
+                <input id="caname" placeholder="الاسم (Arabic)" required>
+                <button type="submit" class="w-full btn-gold p-2 rounded">ذخیره</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let token = localStorage.getItem('admToken');
+        let data = {};
+
+        if(token) init();
+
+        async function login() {
+            const t = document.getElementById('token').value;
+            try {
+                const res = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({token: t})
+                });
+                if(res.ok) {
+                    token = t; localStorage.setItem('admToken', t);
+                    init();
+                } else alert('توکن اشتباه است');
+            } catch { alert('خطا'); }
+        }
+
+        function logout() { localStorage.removeItem('admToken'); location.reload(); }
+
+        async function init() {
+            try {
+                const res = await fetch('/api/admin/full-data', {headers: {'X-Admin-Token': token}});
+                if(!res.ok) throw new Error();
+                data = await res.json();
+                document.getElementById('login').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                render();
+            } catch {
+                localStorage.removeItem('admToken');
+                document.getElementById('login').classList.remove('hidden');
+            }
+        }
+
+        function render() {
+            document.getElementById('prodList').innerHTML = data.products.map(p => `
+                <div class="bg-[#222] p-3 rounded border border-white/10 flex gap-2">
+                    <img src="${p.image}" class="w-16 h-16 object-cover rounded">
+                    <div>
+                        <div class="font-bold">${p.name.fa}</div>
+                        <div class="text-[#D4AF37]">${p.price} OMR</div>
+                        <button onclick="delProd('${p.id}')" class="text-red-500 text-sm mt-1">حذف</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            const catsHtml = data.categories.map(c => `
+                <div class="flex justify-between bg-[#222] p-2 rounded">
+                    <span>${c.name.fa}</span>
+                    <button onclick="delCat('${c.id}')" class="text-red-500">x</button>
+                </div>
+            `).join('');
+            document.getElementById('catList').innerHTML = catsHtml;
+            document.getElementById('pcat').innerHTML = data.categories.map(c => `<option value="${c.id}">${c.name.fa}</option>`).join('');
+
+            document.getElementById('orderList').innerHTML = data.orders.slice().reverse().map(o => `
+                <div class="bg-[#222] p-4 rounded border border-white/10">
+                    <div class="flex justify-between mb-2">
+                        <span class="font-bold">#${o.id}</span>
+                        <select onchange="setStatus('${o.id}', this.value)" class="w-auto p-1 text-sm">
+                            <option value="pending_payment" ${o.status==='pending_payment'?'selected':''}>معلق</option>
+                            <option value="confirmed" ${o.status==='confirmed'?'selected':''}>تأیید</option>
+                            <option value="shipped" ${o.status==='shipped'?'selected':''}>ارسال</option>
+                        </select>
+                    </div>
+                    <div class="text-sm text-gray-400">
+                        ${o.customer.firstName} ${o.customer.lastName} | ${o.total_omr.toFixed(2)} OMR
+                    </div>
+                    ${o.customer.location ? `<a href="https://maps.google.com/?q=${o.customer.location}" target="_blank" class="text-blue-400 text-xs">📍 لوکیشن</a>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function tab(t) {
+            document.querySelectorAll('.tab-content').forEach(e=>e.classList.add('hidden'));
+            document.getElementById(t).classList.remove('hidden');
+            document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // API Calls
+        async function api(url, method, body) {
+            await fetch(url, {
+                method, headers: {'Content-Type': 'application/json', 'X-Admin-Token': token},
+                body: JSON.stringify(body)
+            });
+            init();
+        }
+
+        document.getElementById('prodForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const p = {
+                id: Date.now().toString(),
+                name: {fa: document.getElementById('pname').value, en: document.getElementById('pename').value, ar: document.getElementById('paname').value},
+                description: {fa:'',en:'',ar:''},
+                price: parseFloat(document.getElementById('pprice').value),
+                category: document.getElementById('pcat').value,
+                image: document.getElementById('pimg').value
+            };
+            api('/api/admin/product', 'POST', p);
+            document.getElementById('prodModal').classList.add('hidden');
+        });
+
+        document.getElementById('catForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const c = {
+                id: Date.now().toString(),
+                name: {fa: document.getElementById('cname').value, en: document.getElementById('cename').value, ar: document.getElementById('caname').value}
+            };
+            api('/api/admin/category', 'POST', c);
+            document.getElementById('catModal').classList.add('hidden');
+        });
+
+        function delProd(id) { if(confirm('حذف؟')) api(`/api/admin/product/${id}`, 'DELETE'); }
+        function delCat(id) { if(confirm('حذف؟')) api(`/api/admin/category/${id}`, 'DELETE'); }
+        function setStatus(id, s) { api('/api/admin/order-status', 'POST', {id, status: s}); }
+        
+        function dlBackup() { window.open(`/api/admin/backup?token=${token}`); }
+        async function restore() {
+            const f = document.getElementById('restoreFile').files[0];
+            if(!f) return;
+            const fd = new FormData(); fd.append('file', f);
+            await fetch('/api/admin/restore', {method:'POST', headers:{'X-Admin-Token':token}, body: fd});
+            init();
+        }
+    </script>
+</body>
+</html>
