@@ -23,7 +23,7 @@ ADMIN_FILE = os.path.join(BASE_DIR, 'admin.html')
 SUCCESS_FILE = os.path.join(BASE_DIR, 'success.html')
 
 # Environment Variables (Secrets)
-ADMIN_TOKEN = os.getenv("ADMIN_TOKEN") # Default for safety
+ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "mamad1390") # Default for safety
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
 PAYPAL_SECRET = os.getenv("PAYPAL_SECRET")
 PAYPAL_SANDBOX = os.getenv("PAYPAL_SANDBOX", "False").lower() == "true"
