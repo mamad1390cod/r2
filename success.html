@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پرداخت موفق | Royal Restaurant</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { font-family: 'Vazirmatn', sans-serif; }
+        body { background: #0D0D0D; color: white; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .gold-gradient {
+            background: linear-gradient(135deg, #D4AF37 0%, #F4E4BA 50%, #D4AF37 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, #D4AF37 0%, #B8962D 100%);
+            color: black; font-weight: bold; transition: 0.3s;
+        }
+        .btn-gold:hover { transform: scale(1.02); }
+        .pulse-gold { animation: pulseGold 2s infinite; }
+        @keyframes pulseGold {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
+            50% { box-shadow: 0 0 20px 10px rgba(212, 175, 55, 0); }
+        }
+    </style>
+</head>
+<body class="p-4 text-center">
+    <div class="max-w-md w-full bg-[#1A1A1A] p-8 rounded-2xl border border-[#D4AF37]/30">
+        <div class="w-24 h-24 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6 pulse-gold">
+            <i class="fas fa-check text-5xl text-green-500"></i>
+        </div>
+        
+        <h1 class="text-3xl font-bold gold-gradient mb-4">پرداخت موفق!</h1>
+        <p class="text-gray-400 mb-6">سفارش شما با موفقیت ثبت شد و در حال آماده‌سازی است.</p>
+        
+        <div id="orderDetails" class="bg-black/30 rounded-xl p-4 mb-6 text-right hidden">
+            <div class="flex justify-between mb-2 text-sm">
+                <span class="text-gray-400">شماره سفارش:</span>
+                <span id="orderId" class="font-mono text-[#D4AF37]"></span>
+            </div>
+            <div class="border-t border-white/10 my-2"></div>
+            <div id="orderItems" class="space-y-2 text-sm text-gray-300"></div>
+            <div class="border-t border-white/10 my-2"></div>
+            <div class="flex justify-between font-bold">
+                <span>مجموع:</span>
+                <span id="orderTotal" class="text-[#D4AF37]"></span>
+            </div>
+        </div>
+        
+        <a href="/" class="block w-full btn-gold py-3 rounded-xl">بازگشت به صفحه اصلی</a>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('oid');
+        
+        if (orderId) {
+            // Save to local storage for "My Orders"
+            const myOrders = JSON.parse(localStorage.getItem('myOrderIds')) || [];
+            if (!myOrders.includes(orderId)) {
+                myOrders.push(orderId);
+                localStorage.setItem('myOrderIds', JSON.stringify(myOrders));
+            }
+
+            // Fetch details
+            fetch(`/api/order/${orderId}`)
+                .then(res => res.json())
+                .then(order => {
+                    document.getElementById('orderDetails').classList.remove('hidden');
+                    document.getElementById('orderId').textContent = '#' + order.id;
+                    document.getElementById('orderTotal').textContent = order.total_omr.toFixed(2) + ' OMR';
+                    document.getElementById('orderItems').innerHTML = order.items.map(i => 
+                        `<div class="flex justify-between"><span>${i.name.fa} × ${i.quantity}</span><span>${(i.price * i.quantity).toFixed(2)}</span></div>`
+                    ).join('');
+                    
+                    // Clear Cart
+                    localStorage.removeItem('cart');
+                })
+                .catch(console.error);
+        }
+    </script>
+</body>
+</html>
