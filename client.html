@@ -9,240 +9,723 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { font-family: 'Vazirmatn', sans-serif; }
-        :root { --gold: #D4AF37; --gold-light: #F4E4BA; }
-        body { background: linear-gradient(135deg, #0D0D0D 0%, #1A1A1A 50%, #0D0D0D 100%); min-height: 100vh; color: white; }
-        .gold-gradient { background: linear-gradient(135deg, #D4AF37 0%, #F4E4BA 50%, #D4AF37 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .gold-border { border: 1px solid rgba(212, 175, 55, 0.3); }
-        .btn-gold { background: linear-gradient(135deg, #D4AF37 0%, #B8962D 100%); transition: all 0.3s ease; color: black; font-weight: bold; }
-        .btn-gold:hover { background: linear-gradient(135deg, #F4E4BA 0%, #D4AF37 100%); transform: scale(1.02); }
+        :root {
+            --gold: #D4AF37;
+            --gold-light: #F4E4BA;
+            --dark: #0D0D0D;
+            --dark-light: #1A1A1A;
+            --dark-medium: #2D2D2D;
+        }
+        body {
+            background: linear-gradient(135deg, #0D0D0D 0%, #1A1A1A 50%, #0D0D0D 100%);
+            min-height: 100vh;
+        }
+        .gold-gradient {
+            background: linear-gradient(135deg, #D4AF37 0%, #F4E4BA 50%, #D4AF37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .gold-border {
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+        .gold-glow {
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+        }
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.15);
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, #D4AF37 0%, #B8962D 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-gold:hover {
+            background: linear-gradient(135deg, #F4E4BA 0%, #D4AF37 100%);
+            transform: scale(1.02);
+        }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .category-active { background: linear-gradient(135deg, #D4AF37 0%, #B8962D 100%); color: #0D0D0D; }
-        input, textarea, select { background: #2D2D2D !important; border: 1px solid rgba(212, 175, 55, 0.3) !important; color: white !important; }
-        .modal-backdrop { background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .modal-backdrop {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .category-active {
+            background: linear-gradient(135deg, #D4AF37 0%, #B8962D 100%);
+            color: #0D0D0D;
+        }
+        .bottom-nav {
+            background: linear-gradient(180deg, rgba(13, 13, 13, 0.95) 0%, rgba(26, 26, 26, 0.98) 100%);
+            backdrop-filter: blur(20px);
+        }
+        .product-image {
+            aspect-ratio: 1;
+            object-fit: cover;
+        }
+        .rtl { direction: rtl; text-align: right; }
+        .ltr { direction: ltr; text-align: left; }
+        input, textarea, select {
+            background: #2D2D2D !important;
+            border: 1px solid rgba(212, 175, 55, 0.3) !important;
+            color: white !important;
+        }
+        input:focus, textarea:focus, select:focus {
+            border-color: #D4AF37 !important;
+            outline: none !important;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2) !important;
+        }
+        .discount-badge {
+            background: linear-gradient(135deg, #FF4757 0%, #FF6B7A 100%);
+        }
     </style>
 </head>
-<body class="pb-24">
-    <header class="fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-md p-4">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#B8962D] flex items-center justify-center">
-                    <i class="fas fa-crown text-black"></i>
+<body class="text-white">
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-black/95 to-transparent backdrop-blur-md">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#B8962D] flex items-center justify-center">
+                        <i class="fas fa-crown text-black text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold gold-gradient" data-translate="siteName">رستوران رویال</h1>
+                        <p class="text-xs text-gray-400" data-translate="siteSlogan">تجربه طعم لوکس</p>
+                    </div>
                 </div>
-                <h1 class="text-xl font-bold gold-gradient" data-translate="siteName">رستوران رویال</h1>
-            </div>
-            <div class="flex gap-3">
-                <button onclick="toggleLang()" class="gold-border px-3 rounded-lg"><span id="currLang">🇮🇷</span></button>
-                <button onclick="showCart()" class="relative p-2">
-                    <i class="fas fa-shopping-bag text-[#D4AF37] text-xl"></i>
-                    <span id="cartBadge" class="absolute -top-1 -right-1 bg-red-500 text-xs w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
-                </button>
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <button id="langBtn" class="flex items-center gap-2 px-3 py-2 rounded-lg gold-border hover:bg-white/5 transition">
+                            <span id="currentLang">🇮🇷</span>
+                            <i class="fas fa-chevron-down text-xs text-[#D4AF37]"></i>
+                        </button>
+                        <div id="langDropdown" class="hidden absolute top-full right-0 mt-2 bg-[#1A1A1A] rounded-lg gold-border overflow-hidden min-w-[120px]">
+                            <button onclick="setLanguage('fa')" class="w-full px-4 py-2 hover:bg-white/5 flex items-center gap-2"><span>🇮🇷</span> فارسی</button>
+                            <button onclick="setLanguage('en')" class="w-full px-4 py-2 hover:bg-white/5 flex items-center gap-2"><span>🇬🇧</span> English</button>
+                            <button onclick="setLanguage('ar')" class="w-full px-4 py-2 hover:bg-white/5 flex items-center gap-2"><span>🇸🇦</span> العربية</button>
+                        </div>
+                    </div>
+                    <button onclick="showCart()" class="relative p-2">
+                        <i class="fas fa-shopping-bag text-xl text-[#D4AF37]"></i>
+                        <span id="cartBadge" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs flex items-center justify-center hidden">0</span>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
 
-    <main class="container mx-auto px-4 pt-24">
-        <div id="cats" class="flex gap-3 overflow-x-auto scrollbar-hide py-4"></div>
-        <div id="prods" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+    <!-- Main Content -->
+    <main class="pt-24 pb-24">
+        <!-- Hero Section -->
+        <section class="container mx-auto px-4 mb-8">
+            <div class="relative rounded-2xl overflow-hidden gold-border gold-glow">
+                <div class="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent z-10"></div>
+                <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200" alt="Restaurant" class="w-full h-48 md:h-64 object-cover">
+                <div class="absolute inset-0 z-20 flex flex-col justify-center p-6 md:p-10">
+                    <h2 class="text-2xl md:text-4xl font-bold mb-2 gold-gradient" data-translate="heroTitle">به دنیای طعم‌های شاهانه خوش آمدید</h2>
+                    <p class="text-gray-300 text-sm md:text-base" data-translate="heroSubtitle">سفارش آنلاین غذاهای لوکس با کیفیت برتر</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories -->
+        <section class="container mx-auto px-4 mb-6">
+            <div id="categoriesContainer" class="flex gap-3 overflow-x-auto scrollbar-hide py-2">
+                <!-- Loaded dynamically -->
+            </div>
+        </section>
+
+        <!-- Products Grid -->
+        <section class="container mx-auto px-4">
+            <div id="productsGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- Loaded dynamically -->
+            </div>
+        </section>
     </main>
 
-    <nav class="fixed bottom-0 w-full bg-[#1A1A1A] gold-border border-b-0 rounded-t-3xl z-40 p-3 flex justify-around">
-        <button onclick="showCart()" class="text-gray-400 hover:text-[#D4AF37] flex flex-col items-center"><i class="fas fa-shopping-cart"></i><span class="text-xs mt-1" data-translate="cart">سبد</span></button>
-        <button onclick="showOrders()" class="text-gray-400 hover:text-[#D4AF37] flex flex-col items-center"><i class="fas fa-box"></i><span class="text-xs mt-1" data-translate="myOrders">سفارشات</span></button>
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bottom-nav gold-border border-b-0 rounded-t-3xl z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-around items-center py-3">
+                <button onclick="showCart()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-[#D4AF37] transition">
+                    <i class="fas fa-shopping-cart text-xl"></i>
+                    <span class="text-xs" data-translate="cart">سبد خرید</span>
+                </button>
+                <button onclick="showAccount()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-[#D4AF37] transition">
+                    <i class="fas fa-user text-xl"></i>
+                    <span class="text-xs" data-translate="account">حساب کاربری</span>
+                </button>
+                <button onclick="showSupport()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-[#D4AF37] transition">
+                    <i class="fas fa-headset text-xl"></i>
+                    <span class="text-xs" data-translate="support">پشتیبانی</span>
+                </button>
+                <button onclick="showOrders()" class="flex flex-col items-center gap-1 text-gray-400 hover:text-[#D4AF37] transition">
+                    <i class="fas fa-box text-xl"></i>
+                    <span class="text-xs" data-translate="myOrders">سفارشات من</span>
+                </button>
+            </div>
+        </div>
     </nav>
 
     <!-- Cart Modal -->
-    <div id="cartModal" class="fixed inset-0 z-50 hidden">
+    <div id="cartModal" class="fixed inset-0 z-[100] hidden">
         <div class="modal-backdrop absolute inset-0" onclick="closeCart()"></div>
-        <div class="absolute bottom-0 w-full bg-[#1A1A1A] rounded-t-3xl gold-border max-h-[85vh] overflow-hidden flex flex-col">
-            <div class="p-4 border-b border-white/10 flex justify-between">
-                <h3 class="font-bold gold-gradient" data-translate="cart">سبد خرید</h3>
-                <button onclick="closeCart()"><i class="fas fa-times"></i></button>
+        <div class="absolute bottom-0 left-0 right-0 bg-[#1A1A1A] rounded-t-3xl gold-border border-b-0 max-h-[85vh] overflow-hidden animate-fade-in">
+            <div class="p-4 border-b border-white/10 flex items-center justify-between">
+                <h3 class="text-xl font-bold gold-gradient" data-translate="shoppingCart">سبد خرید</h3>
+                <button onclick="closeCart()" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            <div id="cartItems" class="p-4 overflow-y-auto flex-1"></div>
+            <div id="cartItems" class="p-4 overflow-y-auto max-h-[40vh]">
+                <!-- Loaded dynamically -->
+            </div>
             <div class="p-4 border-t border-white/10">
-                <button onclick="showCheckout()" class="w-full btn-gold py-3 rounded-xl font-bold" data-translate="checkout">تکمیل سفارش</button>
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-gray-400" data-translate="total">جمع کل:</span>
+                    <span id="cartTotal" class="text-2xl font-bold text-[#D4AF37]">0 OMR</span>
+                </div>
+                <button onclick="showCheckout()" class="w-full btn-gold text-black font-bold py-4 rounded-xl" data-translate="checkout">تکمیل سفارش</button>
             </div>
         </div>
     </div>
 
     <!-- Checkout Modal -->
-    <div id="checkoutModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+    <div id="checkoutModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
         <div class="modal-backdrop absolute inset-0" onclick="closeCheckout()"></div>
-        <div class="min-h-screen flex items-center justify-center p-4">
-            <div class="bg-[#1A1A1A] w-full max-w-lg rounded-2xl gold-border p-4 relative">
-                <h3 class="font-bold gold-gradient mb-4" data-translate="orderForm">فرم سفارش</h3>
-                <form id="orderForm" class="space-y-3">
-                    <div class="grid grid-cols-2 gap-3">
-                        <input type="text" name="firstName" placeholder="نام" required class="w-full p-3 rounded-xl">
-                        <input type="text" name="lastName" placeholder="نام خانوادگی" required class="w-full p-3 rounded-xl">
-                    </div>
-                    <input type="tel" name="phone" placeholder="شماره تماس" required class="w-full p-3 rounded-xl">
-                    <textarea name="address" placeholder="آدرس دقیق" required class="w-full p-3 rounded-xl"></textarea>
-                    <div class="flex gap-2">
-                        <input type="text" name="location" id="locInput" placeholder="لوکیشن" readonly class="flex-1 p-3 rounded-xl">
-                        <button type="button" onclick="getLoc()" class="btn-gold px-4 rounded-xl"><i class="fas fa-map-marker-alt"></i></button>
-                    </div>
-                    <select name="contactMethod" class="w-full p-3 rounded-xl">
-                        <option value="whatsapp">واتساپ</option>
-                        <option value="telegram">تلگرام</option>
-                    </select>
-                    <select name="deliveryType" class="w-full p-3 rounded-xl">
-                        <option value="delivery">ارسال با پیک</option>
-                        <option value="pickup">تحویل حضوری</option>
-                    </select>
-                    <button type="submit" id="payBtn" class="w-full btn-gold py-3 rounded-xl mt-4 font-bold">
-                        <i class="fab fa-paypal mr-2"></i> پرداخت با PayPal
+        <div class="relative min-h-screen flex items-center justify-center p-4">
+            <div class="relative bg-[#1A1A1A] rounded-2xl gold-border w-full max-w-lg max-h-[90vh] overflow-y-auto animate-fade-in">
+                <div class="sticky top-0 bg-[#1A1A1A] p-4 border-b border-white/10 flex items-center justify-between z-10">
+                    <h3 class="text-xl font-bold gold-gradient" data-translate="orderForm">فرم سفارش</h3>
+                    <button onclick="closeCheckout()" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">
+                        <i class="fas fa-times"></i>
                     </button>
+                </div>
+                <form id="orderForm" class="p-4 space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1" data-translate="firstName">نام</label>
+                            <input type="text" name="firstName" required class="w-full px-4 py-3 rounded-xl">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1" data-translate="lastName">نام خانوادگی</label>
+                            <input type="text" name="lastName" required class="w-full px-4 py-3 rounded-xl">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1" data-translate="phone">شماره تماس</label>
+                        <input type="tel" name="phone" required class="w-full px-4 py-3 rounded-xl">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1" data-translate="address">آدرس</label>
+                        <textarea name="address" rows="2" required class="w-full px-4 py-3 rounded-xl resize-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1" data-translate="location">لوکیشن</label>
+                        <div class="flex gap-2">
+                            <input type="text" name="location" id="locationInput" readonly class="flex-1 px-4 py-3 rounded-xl" placeholder="کلیک کنید">
+                            <button type="button" onclick="getLocation()" class="px-4 py-3 btn-gold rounded-xl text-black">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1" data-translate="notes">توضیحات اضافه</label>
+                        <textarea name="notes" rows="2" class="w-full px-4 py-3 rounded-xl resize-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2" data-translate="contactMethod">راه ارتباط</label>
+                        <div class="flex gap-3">
+                            <label class="flex-1 flex items-center justify-center gap-2 p-3 rounded-xl gold-border cursor-pointer hover:bg-white/5">
+                                <input type="radio" name="contactMethod" value="whatsapp" checked class="hidden">
+                                <i class="fab fa-whatsapp text-green-500"></i>
+                                <span>واتساپ</span>
+                            </label>
+                            <label class="flex-1 flex items-center justify-center gap-2 p-3 rounded-xl gold-border cursor-pointer hover:bg-white/5">
+                                <input type="radio" name="contactMethod" value="telegram" class="hidden">
+                                <i class="fab fa-telegram text-blue-500"></i>
+                                <span>تلگرام</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2" data-translate="deliveryType">نوع تحویل</label>
+                        <div class="flex gap-3">
+                            <label class="flex-1 flex items-center justify-center gap-2 p-3 rounded-xl gold-border cursor-pointer hover:bg-white/5">
+                                <input type="radio" name="deliveryType" value="delivery" checked class="hidden">
+                                <i class="fas fa-truck text-[#D4AF37]"></i>
+                                <span data-translate="delivery">ارسال</span>
+                            </label>
+                            <label class="flex-1 flex items-center justify-center gap-2 p-3 rounded-xl gold-border cursor-pointer hover:bg-white/5">
+                                <input type="radio" name="deliveryType" value="pickup" class="hidden">
+                                <i class="fas fa-walking text-[#D4AF37]"></i>
+                                <span data-translate="pickup">حضوری</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="border-t border-white/10 pt-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-gray-400" data-translate="totalPayable">مبلغ قابل پرداخت:</span>
+                            <div class="text-left">
+                                <div id="checkoutTotalOMR" class="text-xl font-bold text-[#D4AF37]">0 OMR</div>
+                                <div id="checkoutTotalUSD" class="text-sm text-gray-400">≈ $0 USD</div>
+                            </div>
+                        </div>
+                        <button type="submit" id="payButton" class="w-full btn-gold text-black font-bold py-4 rounded-xl flex items-center justify-center gap-2">
+                            <i class="fab fa-paypal"></i>
+                            <span data-translate="payWithPaypal">پرداخت با PayPal</span>
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Orders Modal -->
-    <div id="ordersModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
-        <div class="modal-backdrop absolute inset-0" onclick="document.getElementById('ordersModal').classList.add('hidden')"></div>
-        <div class="min-h-screen flex items-center justify-center p-4">
-            <div class="bg-[#1A1A1A] w-full max-w-lg rounded-2xl gold-border p-4">
-                <h3 class="font-bold gold-gradient mb-4" data-translate="myOrders">سفارشات من</h3>
-                <div id="ordersList" class="space-y-3"></div>
+    <!-- Product Detail Modal -->
+    <div id="productModal" class="fixed inset-0 z-[100] hidden">
+        <div class="modal-backdrop absolute inset-0" onclick="closeProductModal()"></div>
+        <div class="absolute bottom-0 left-0 right-0 bg-[#1A1A1A] rounded-t-3xl gold-border border-b-0 max-h-[85vh] overflow-hidden animate-fade-in">
+            <div id="productModalContent">
+                <!-- Content -->
             </div>
         </div>
     </div>
 
+    <!-- Account, Support, Orders Modals (Simplified for structure) -->
+    <!-- Account Modal -->
+    <div id="accountModal" class="fixed inset-0 z-[100] hidden">
+        <div class="modal-backdrop absolute inset-0" onclick="closeAccount()"></div>
+        <div class="absolute bottom-0 left-0 right-0 bg-[#1A1A1A] rounded-t-3xl gold-border border-b-0 max-h-[85vh] overflow-hidden animate-fade-in">
+            <div class="p-4 border-b border-white/10 flex items-center justify-between">
+                <h3 class="text-xl font-bold gold-gradient" data-translate="myAccount">حساب کاربری</h3>
+                <button onclick="closeAccount()" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-4 text-center py-8">
+                <div class="w-20 h-20 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#B8962D] flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-user text-3xl text-black"></i>
+                </div>
+                <p class="text-gray-400" data-translate="guestUser">کاربر مهمان</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Support Modal -->
+    <div id="supportModal" class="fixed inset-0 z-[100] hidden">
+        <div class="modal-backdrop absolute inset-0" onclick="closeSupport()"></div>
+        <div class="absolute bottom-0 left-0 right-0 bg-[#1A1A1A] rounded-t-3xl gold-border border-b-0 max-h-[85vh] overflow-hidden animate-fade-in">
+            <div class="p-4 border-b border-white/10 flex items-center justify-between">
+                <h3 class="text-xl font-bold gold-gradient" data-translate="supportTitle">پشتیبانی</h3>
+                <button onclick="closeSupport()" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-4 space-y-4">
+                <a href="https://wa.me/96812345678" class="flex items-center gap-4 p-4 rounded-xl gold-border hover:bg-white/5 transition">
+                    <div class="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center"><i class="fab fa-whatsapp text-2xl text-green-500"></i></div>
+                    <div><div class="font-bold">WhatsApp</div><div class="text-sm text-gray-400">+968 1234 5678</div></div>
+                </a>
+                <a href="tel:+96812345678" class="flex items-center gap-4 p-4 rounded-xl gold-border hover:bg-white/5 transition">
+                    <div class="w-12 h-12 rounded-full bg-[#D4AF37]/20 flex items-center justify-center"><i class="fas fa-phone text-2xl text-[#D4AF37]"></i></div>
+                    <div><div class="font-bold" data-translate="callUs">تماس مستقیم</div><div class="text-sm text-gray-400">+968 1234 5678</div></div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Modal -->
+    <div id="ordersModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
+        <div class="modal-backdrop absolute inset-0" onclick="closeOrders()"></div>
+        <div class="relative min-h-screen flex items-center justify-center p-4">
+            <div class="relative bg-[#1A1A1A] rounded-2xl gold-border w-full max-w-lg max-h-[90vh] overflow-y-auto animate-fade-in">
+                <div class="sticky top-0 bg-[#1A1A1A] p-4 border-b border-white/10 flex items-center justify-between z-10">
+                    <h3 class="text-xl font-bold gold-gradient" data-translate="myOrdersTitle">سفارشات من</h3>
+                    <button onclick="closeOrders()" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center"><i class="fas fa-times"></i></button>
+                </div>
+                <div id="ordersList" class="p-4 space-y-4">
+                    <!-- Loaded dynamically via LocalStorage of order IDs -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-[#1A1A1A] text-white px-6 py-3 rounded-xl gold-border shadow-lg z-[400] hidden">
+        <span id="toastMessage"></span>
+    </div>
+
     <script>
-        const texts = {
-            fa: { siteName: 'رستوران رویال', cart: 'سبد خرید', checkout: 'تکمیل خرید', orderForm: 'اطلاعات', myOrders: 'سفارشات من' },
-            en: { siteName: 'Royal Restaurant', cart: 'Cart', checkout: 'Checkout', orderForm: 'Details', myOrders: 'My Orders' },
-            ar: { siteName: 'مطعم رويال', cart: 'السلة', checkout: 'الدفع', orderForm: 'المعلومات', myOrders: 'طلباتي' }
+        // Translations
+        const translations = {
+            fa: {
+                siteName: 'رستوران رویال', siteSlogan: 'تجربه طعم لوکس', heroTitle: 'به دنیای طعم‌های شاهانه خوش آمدید', heroSubtitle: 'سفارش آنلاین غذاهای لوکس با کیفیت برتر', allItems: 'همه', cart: 'سبد خرید', account: 'حساب کاربری', support: 'پشتیبانی', myOrders: 'سفارشات من', shoppingCart: 'سبد خرید', total: 'جمع کل:', checkout: 'تکمیل سفارش', orderForm: 'فرم سفارش', firstName: 'نام', lastName: 'نام خانوادگی', phone: 'شماره تماس', address: 'آدرس', location: 'لوکیشن', notes: 'توضیحات اضافه', contactMethod: 'راه ارتباط', deliveryType: 'نوع تحویل', delivery: 'ارسال', pickup: 'حضوری', totalPayable: 'مبلغ قابل پرداخت:', payWithPaypal: 'پرداخت با PayPal', myAccount: 'حساب کاربری', guestUser: 'کاربر مهمان', supportTitle: 'پشتیبانی', callUs: 'تماس مستقیم', myOrdersTitle: 'سفارشات من', emptyCart: 'سبد خرید خالی است', noOrders: 'سفارشی ثبت نشده'
+            },
+            en: {
+                siteName: 'Royal Restaurant', siteSlogan: 'Experience Luxury Taste', heroTitle: 'Welcome to Royal Flavors', heroSubtitle: 'Online ordering of premium quality food', allItems: 'All', cart: 'Cart', account: 'Account', support: 'Support', myOrders: 'My Orders', shoppingCart: 'Shopping Cart', total: 'Total:', checkout: 'Checkout', orderForm: 'Order Form', firstName: 'First Name', lastName: 'Last Name', phone: 'Phone', address: 'Address', location: 'Location', notes: 'Additional Notes', contactMethod: 'Contact Method', deliveryType: 'Delivery Type', delivery: 'Delivery', pickup: 'Pickup', totalPayable: 'Total Payable:', payWithPaypal: 'Pay with PayPal', myAccount: 'My Account', guestUser: 'Guest User', supportTitle: 'Support', callUs: 'Call Us', myOrdersTitle: 'My Orders', emptyCart: 'Cart is empty', noOrders: 'No orders found'
+            },
+            ar: {
+                siteName: 'مطعم رويال', siteSlogan: 'تجربة الطعم الفاخر', heroTitle: 'مرحباً بكم في عالم النكهات الملكية', heroSubtitle: 'طلب الطعام الفاخر عبر الإنترنت', allItems: 'الكل', cart: 'السلة', account: 'الحساب', support: 'الدعم', myOrders: 'طلباتي', shoppingCart: 'سلة التسوق', total: 'المجموع:', checkout: 'إتمام الطلب', orderForm: 'نموذج الطلب', firstName: 'الاسم', lastName: 'اسم العائلة', phone: 'الهاتف', address: 'العنوان', location: 'الموقع', notes: 'ملاحظات إضافية', contactMethod: 'طريقة التواصل', deliveryType: 'نوع التسليم', delivery: 'توصيل', pickup: 'استلام', totalPayable: 'المبلغ المستحق:', payWithPaypal: 'الدفع عبر PayPal', myAccount: 'حسابي', guestUser: 'زائر', supportTitle: 'الدعم', callUs: 'اتصل بنا', myOrdersTitle: 'طلباتي', emptyCart: 'السلة فارغة', noOrders: 'لا توجد طلبات'
+            }
         };
-        let lang = localStorage.getItem('lang') || 'fa';
-        let products = [], categories = [], cart = JSON.parse(localStorage.getItem('cart')) || [];
-        let myOrders = JSON.parse(localStorage.getItem('myOrders')) || [];
 
-        function setLang(l) {
-            lang = l; localStorage.setItem('lang', l);
-            document.getElementById('currLang').textContent = l === 'fa' ? '🇮🇷' : (l === 'en' ? '🇬🇧' : '🇸🇦');
-            document.documentElement.dir = l === 'en' ? 'ltr' : 'rtl';
-            document.querySelectorAll('[data-translate]').forEach(e => e.textContent = texts[l][e.dataset.translate]);
-            render();
+        // State
+        let currentLang = localStorage.getItem('lang') || 'fa';
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let products = [];
+        let categories = [];
+        let currentCategory = 'all';
+        let myOrderIds = JSON.parse(localStorage.getItem('myOrderIds')) || [];
+
+        // Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchData();
+            setLanguage(currentLang);
+            updateCartBadge();
+            setupEventListeners();
+            checkErrors();
+        });
+
+        async function fetchData() {
+            try {
+                const response = await fetch('/api/data');
+                const data = await response.json();
+                products = data.products;
+                categories = data.categories;
+                loadCategories();
+                loadProducts();
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                showToast('خطا در دریافت اطلاعات');
+            }
         }
-        function toggleLang() { setLang(lang === 'fa' ? 'en' : (lang === 'en' ? 'ar' : 'fa')); }
 
-        async function init() {
-            const res = await fetch('/api/data');
-            const data = await res.json();
-            products = data.products; categories = data.categories;
-            setLang(lang);
-            updateCart();
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('lang', lang);
+            
+            const isRTL = lang === 'fa' || lang === 'ar';
+            document.documentElement.setAttribute('dir', isRTL ? 'rtl' : 'ltr');
+            document.documentElement.setAttribute('lang', lang);
+            
+            const flags = { fa: '🇮🇷', en: '🇬🇧', ar: '🇸🇦' };
+            document.getElementById('currentLang').textContent = flags[lang];
+            document.getElementById('langDropdown').classList.add('hidden');
+            
+            document.querySelectorAll('[data-translate]').forEach(el => {
+                const key = el.getAttribute('data-translate');
+                if (translations[lang] && translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+            
+            loadCategories();
+            loadProducts();
         }
 
-        function render() {
-            document.getElementById('cats').innerHTML = categories.map(c => 
-                `<button onclick="filter('${c.id}')" class="px-4 py-2 rounded-full gold-border whitespace-nowrap">${c.name[lang]}</button>`
-            ).join('');
-            filter('all');
+        function loadCategories() {
+            const container = document.getElementById('categoriesContainer');
+            const allBtnText = translations[currentLang]?.allItems || 'همه';
+            
+            let html = `<button onclick="filterByCategory('all')" class="category-btn ${currentCategory === 'all' ? 'category-active' : ''} px-5 py-2 rounded-full gold-border whitespace-nowrap transition-all" data-category="all">${allBtnText}</button>`;
+            
+            categories.forEach(cat => {
+                const name = cat.name[currentLang] || cat.name.fa;
+                html += `<button onclick="filterByCategory('${cat.id}')" class="category-btn ${currentCategory === cat.id ? 'category-active' : ''} px-5 py-2 rounded-full gold-border whitespace-nowrap transition-all" data-category="${cat.id}">${name}</button>`;
+            });
+            
+            container.innerHTML = html;
         }
 
-        function filter(cid) {
-            const list = cid === 'all' ? products : products.filter(p => p.category === cid);
-            document.getElementById('prods').innerHTML = list.map(p => `
-                <div class="bg-[#1A1A1A] rounded-xl gold-border overflow-hidden">
-                    <img src="${p.image}" class="w-full h-32 object-cover">
-                    <div class="p-3">
-                        <h4 class="font-bold truncate">${p.name[lang]}</h4>
-                        <div class="flex justify-between items-center mt-2">
-                            <span class="text-[#D4AF37] text-sm">${p.price} OMR</span>
-                            <button onclick="addCart('${p.id}')" class="btn-gold px-2 py-1 rounded-lg text-xs"><i class="fas fa-plus"></i></button>
+        function filterByCategory(categoryId) {
+            currentCategory = categoryId;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('category-active');
+                if (btn.getAttribute('data-category') === categoryId) btn.classList.add('category-active');
+            });
+            loadProducts();
+        }
+
+        function loadProducts() {
+            const container = document.getElementById('productsGrid');
+            let filtered = currentCategory === 'all' ? products : products.filter(p => p.category === currentCategory);
+            
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center py-10 text-gray-400">محصولی یافت نشد</div>';
+                return;
+            }
+            
+            container.innerHTML = filtered.map(p => {
+                const name = p.name[currentLang] || p.name.fa;
+                const finalPrice = p.discount ? (p.price * (1 - p.discount / 100)).toFixed(2) : p.price.toFixed(2);
+                
+                return `
+                    <div class="bg-[#1A1A1A] rounded-2xl gold-border overflow-hidden card-hover">
+                        <div class="relative">
+                            <img src="${p.image}" alt="${name}" class="product-image w-full">
+                            ${p.discount ? `<span class="absolute top-2 right-2 discount-badge text-white text-xs px-2 py-1 rounded-full">${p.discount}% OFF</span>` : ''}
+                        </div>
+                        <div class="p-3">
+                            <h3 class="font-bold text-sm mb-1 truncate">${name}</h3>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-[#D4AF37] font-bold">${finalPrice} OMR</span>
+                                ${p.discount ? `<span class="text-xs text-gray-500 line-through">${p.price.toFixed(2)}</span>` : ''}
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="showProductDetails('${p.id}')" class="flex-1 py-2 rounded-lg gold-border text-xs hover:bg-white/5 transition"><i class="fas fa-info-circle"></i></button>
+                                <button onclick="addToCart('${p.id}')" class="flex-1 py-2 rounded-lg btn-gold text-black text-xs font-bold"><i class="fas fa-plus"></i></button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
-        function addCart(id) {
-            const item = cart.find(x => x.id === id);
-            if(item) item.quantity++; else cart.push({id, quantity: 1});
-            updateCart();
-        }
+        function showProductDetails(id) {
+            const p = products.find(x => x.id === id);
+            if (!p) return;
+            const name = p.name[currentLang] || p.name.fa;
+            const desc = p.description[currentLang] || p.description.fa;
+            const price = p.discount ? (p.price * (1 - p.discount / 100)).toFixed(2) : p.price.toFixed(2);
 
-        function updateCart() {
-            localStorage.setItem('cart', JSON.stringify(cart));
-            document.getElementById('cartBadge').textContent = cart.reduce((a,b)=>a+b.quantity,0);
-            document.getElementById('cartBadge').classList.toggle('hidden', cart.length===0);
-        }
-
-        function showCart() {
-            document.getElementById('cartItems').innerHTML = cart.map(item => {
-                const p = products.find(x => x.id === item.id);
-                return `<div class="flex justify-between items-center bg-black/30 p-2 rounded mb-2">
-                    <span>${p.name[lang]}</span>
-                    <div class="flex gap-2 items-center">
-                        <span class="text-[#D4AF37]">${item.quantity}x</span>
-                        <button onclick="cart=cart.filter(x=>x.id!=='${item.id}');updateCart();showCart()" class="text-red-500"><i class="fas fa-trash"></i></button>
+            document.getElementById('productModalContent').innerHTML = `
+                <img src="${p.image}" alt="${name}" class="w-full h-64 object-cover">
+                <div class="p-4">
+                    <h3 class="text-2xl font-bold gold-gradient mb-2">${name}</h3>
+                    <p class="text-gray-400 mb-4">${desc}</p>
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-2xl text-[#D4AF37] font-bold">${price} OMR</span>
                     </div>
-                </div>`;
-            }).join('') || '<div class="text-center text-gray-500">خالی</div>';
-            document.getElementById('cartModal').classList.remove('hidden');
+                    <button onclick="addToCart('${p.id}'); closeProductModal();" class="w-full btn-gold text-black font-bold py-4 rounded-xl">افزودن به سبد خرید</button>
+                </div>
+            `;
+            document.getElementById('productModal').classList.remove('hidden');
         }
 
-        function getLoc() {
-            navigator.geolocation.getCurrentPosition(p => 
-                document.getElementById('locInput').value = `${p.coords.latitude}, ${p.coords.longitude}`
-            );
+        function closeProductModal() { document.getElementById('productModal').classList.add('hidden'); }
+
+        // Cart
+        function addToCart(id) {
+            const existing = cart.find(x => x.id === id);
+            if (existing) existing.quantity++;
+            else cart.push({ id, quantity: 1 });
+            saveCart();
+            showToast('به سبد اضافه شد');
+        }
+
+        function updateCartQuantity(id, change) {
+            const item = cart.find(x => x.id === id);
+            if (!item) return;
+            item.quantity += change;
+            if (item.quantity <= 0) cart = cart.filter(x => x.id !== id);
+            saveCart();
+            renderCartItems();
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(x => x.id !== id);
+            saveCart();
+            renderCartItems();
+        }
+
+        function saveCart() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartBadge();
+        }
+
+        function updateCartBadge() {
+            const badge = document.getElementById('cartBadge');
+            const count = cart.reduce((a, b) => a + b.quantity, 0);
+            badge.textContent = count;
+            count > 0 ? badge.classList.remove('hidden') : badge.classList.add('hidden');
+        }
+
+        function showCart() { renderCartItems(); document.getElementById('cartModal').classList.remove('hidden'); }
+        function closeCart() { document.getElementById('cartModal').classList.add('hidden'); }
+
+        function renderCartItems() {
+            const container = document.getElementById('cartItems');
+            if (cart.length === 0) {
+                container.innerHTML = `<div class="text-center py-10 text-gray-400">${translations[currentLang].emptyCart}</div>`;
+                document.getElementById('cartTotal').textContent = '0 OMR';
+                return;
+            }
+            let total = 0;
+            container.innerHTML = cart.map(item => {
+                const p = products.find(x => x.id === item.id);
+                if (!p) return '';
+                const price = p.discount ? (p.price * (1 - p.discount / 100)) : p.price;
+                total += price * item.quantity;
+                const name = p.name[currentLang] || p.name.fa;
+                return `
+                    <div class="flex items-center gap-3 p-3 rounded-xl gold-border mb-2">
+                        <img src="${p.image}" class="w-16 h-16 rounded-lg object-cover">
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm">${name}</h4>
+                            <div class="text-[#D4AF37]">${price.toFixed(2)} OMR</div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="updateCartQuantity('${item.id}', -1)" class="w-8 h-8 rounded-full gold-border flex items-center justify-center hover:bg-white/5">-</button>
+                            <span class="w-8 text-center">${item.quantity}</span>
+                            <button onclick="updateCartQuantity('${item.id}', 1)" class="w-8 h-8 rounded-full gold-border flex items-center justify-center hover:bg-white/5">+</button>
+                        </div>
+                        <button onclick="removeFromCart('${item.id}')" class="text-red-500 w-8"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+            }).join('');
+            document.getElementById('cartTotal').textContent = total.toFixed(2) + ' OMR';
+        }
+
+        // Checkout
+        function showCheckout() {
+            if (cart.length === 0) return showToast('سبد خرید خالی است');
+            closeCart();
+            updateCheckoutTotal();
+            document.getElementById('checkoutModal').classList.remove('hidden');
+        }
+        function closeCheckout() { document.getElementById('checkoutModal').classList.add('hidden'); }
+
+        function updateCheckoutTotal() {
+            let total = 0;
+            cart.forEach(item => {
+                const p = products.find(x => x.id === item.id);
+                if (p) total += (p.discount ? p.price * (1 - p.discount / 100) : p.price) * item.quantity;
+            });
+            document.getElementById('checkoutTotalOMR').textContent = total.toFixed(2) + ' OMR';
+            document.getElementById('checkoutTotalUSD').textContent = '≈ $' + (total * 2.6).toFixed(2) + ' USD';
+        }
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    pos => { document.getElementById('locationInput').value = `${pos.coords.latitude}, ${pos.coords.longitude}`; showToast('لوکیشن دریافت شد'); },
+                    err => showToast('خطا در دریافت لوکیشن')
+                );
+            } else showToast('مرورگر پشتیبانی نمی‌کند');
         }
 
         document.getElementById('orderForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if(cart.length === 0) return alert('سبد خالی است');
-            const btn = document.getElementById('payBtn');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ...';
-            
+            const btn = document.getElementById('payButton');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال پردازش...';
+
+            const formData = new FormData(e.target);
             const data = {
-                customer: Object.fromEntries(new FormData(e.target)),
-                items: cart
+                customer: Object.fromEntries(formData),
+                items: cart,
+                total_omr: 0 // Calculated on server
             };
 
             try {
                 const res = await fetch('/api/order/create', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
-                if(!res.ok) throw new Error();
-                const json = await res.json();
-                window.location.href = json.approval_url;
-            } catch {
-                alert('خطا در اتصال به درگاه');
-                btn.innerHTML = 'تلاش مجدد';
+                
+                if (res.ok) {
+                    const result = await res.json();
+                    window.location.href = result.approval_url;
+                } else {
+                    throw new Error('Order creation failed');
+                }
+            } catch (error) {
+                console.error(error);
+                showToast('خطا در ثبت سفارش');
+                btn.disabled = false;
+                btn.innerHTML = 'پرداخت با PayPal';
             }
         });
 
+        // Orders
         async function showOrders() {
-            document.getElementById('ordersModal').classList.remove('hidden');
             const list = document.getElementById('ordersList');
-            list.innerHTML = '<div class="text-center">...</div>';
-            
-            let html = '';
-            for(const oid of myOrders) {
+            list.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i></div>';
+            document.getElementById('ordersModal').classList.remove('hidden');
+
+            // Fetch stored orders status
+            const myOrders = [];
+            for (const oid of myOrderIds) {
                 try {
                     const res = await fetch(`/api/order/${oid}`);
-                    if(res.ok) {
-                        const o = await res.json();
-                        html += `<div class="bg-black/40 p-3 rounded border border-white/10">
-                            <div class="flex justify-between"><span>#${o.id}</span><span class="${o.status==='confirmed'?'text-green-500':'text-yellow-500'}">${o.status}</span></div>
-                            <div class="text-sm text-gray-400 mt-1">${o.total_omr.toFixed(2)} OMR</div>
-                        </div>`;
-                    }
-                } catch {}
+                    if (res.ok) myOrders.push(await res.json());
+                } catch(e) {}
             }
-            list.innerHTML = html || 'سفارشی ندارید';
+
+            if (myOrders.length === 0) {
+                list.innerHTML = `<div class="text-center py-10 text-gray-400">${translations[currentLang].noOrders}</div>`;
+                return;
+            }
+
+            list.innerHTML = myOrders.reverse().map(o => `
+                <div class="bg-[#0D0D0D] rounded-xl gold-border p-4">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <div class="font-bold">#${o.id}</div>
+                            <div class="text-sm text-gray-400">${new Date(o.date).toLocaleDateString()}</div>
+                        </div>
+                        <span class="text-xs px-3 py-1 rounded-full ${getStatusColor(o.status)}">${o.status}</span>
+                    </div>
+                    <div class="text-sm text-gray-400 mb-2">${o.items.length} محصول</div>
+                    <div class="flex justify-between pt-2 border-t border-white/10">
+                        <span>مجموع:</span>
+                        <span class="text-[#D4AF37] font-bold">${o.total_omr.toFixed(2)} OMR</span>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        function closeCart() { document.getElementById('cartModal').classList.add('hidden'); }
-        function showCheckout() { closeCart(); document.getElementById('checkoutModal').classList.remove('hidden'); }
-        function closeCheckout() { document.getElementById('checkoutModal').classList.add('hidden'); }
+        function getStatusColor(s) {
+            if(s==='pending_payment') return 'bg-yellow-500';
+            if(s==='confirmed') return 'bg-green-500';
+            return 'bg-blue-500';
+        }
 
-        init();
+        function closeOrders() { document.getElementById('ordersModal').classList.add('hidden'); }
+        function showAccount() { document.getElementById('accountModal').classList.remove('hidden'); }
+        function closeAccount() { document.getElementById('accountModal').classList.add('hidden'); }
+        function showSupport() { document.getElementById('supportModal').classList.remove('hidden'); }
+        function closeSupport() { document.getElementById('supportModal').classList.add('hidden'); }
+
+        // Utils
+        function setupEventListeners() {
+            document.getElementById('langBtn').addEventListener('click', () => {
+                document.getElementById('langDropdown').classList.toggle('hidden');
+            });
+            
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const name = this.name;
+                    document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+                        r.closest('label').classList.remove('bg-[#D4AF37]/20', 'border-[#D4AF37]');
+                    });
+                    if (this.checked) {
+                        this.closest('label').classList.add('bg-[#D4AF37]/20', 'border-[#D4AF37]');
+                    }
+                });
+            });
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = msg;
+            t.classList.remove('hidden');
+            setTimeout(() => t.classList.add('hidden'), 3000);
+        }
+
+        function checkErrors() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('error')) {
+                showToast('خطا در پرداخت یا انصراف');
+            }
+        }
     </script>
 </body>
 </html>
