@@ -24,18 +24,39 @@ SUCCESS_FILE = os.path.join(BASE_DIR, 'success.html')
 
 # Environment Variables (Secrets)
 ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "mamad1390") # Default for safety
-PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
-PAYPAL_SECRET = os.getenv("PAYPAL_SECRET")
-PAYPAL_SANDBOX = os.getenv("PAYPAL_SANDBOX", "true").lower() == "true"
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
-PAYPAL_API_BASE = 'https://api-m.sandbox.paypal.com' if PAYPAL_SANDBOX else 'https://api-m.paypal.com'
-OMR_TO_USD_RATE = 2.6
+# ============ PayPal Configuration ============
+# Set PAYPAL_SANDBOX to "True" for testing, "False" for production
+PAYPAL_SANDBOX = os.getenv("PAYPAL_SANDBOX", "True").lower() == "true"
 
+# Sandbox Credentials (for testing)
+PAYPAL_SANDBOX_CLIENT_ID = os.getenv("PAYPAL_SANDBOX_CLIENT_ID", "Af2zZSnRBjNhYHNwcfGRhBHPRcpmuGepF3_jFJt55ii_vFCQ2hNmU2tjuHHRA-HnKrWeusDU4Pi7hUR8")
+PAYPAL_SANDBOX_SECRET = os.getenv("PAYPAL_SANDBOX_SECRET", "EIIdgJ5f01dsU_89iMggOl0DMEsSTjIpmU-kS0oXsJHXni1qNKfcH1NkdbjJSIMuBIf5jb8VbbomMroV")
+
+# Live Credentials (for production)
+PAYPAL_LIVE_CLIENT_ID = os.getenv("PAYPAL_LIVE_CLIENT_ID")
+PAYPAL_LIVE_SECRET = os.getenv("PAYPAL_LIVE_SECRET")
+
+# Select credentials based on mode
 # Logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("RoyalRestaurant")
+
+if PAYPAL_SANDBOX:
+    PAYPAL_CLIENT_ID = PAYPAL_SANDBOX_CLIENT_ID
+    PAYPAL_SECRET = PAYPAL_SANDBOX_SECRET
+    PAYPAL_API_BASE = 'https://api-m.sandbox.paypal.com'
+else:
+    PAYPAL_CLIENT_ID = PAYPAL_LIVE_CLIENT_ID
+    PAYPAL_SECRET = PAYPAL_LIVE_SECRET
+    PAYPAL_API_BASE = 'https://api-m.paypal.com'
+    logger.info("💳 PayPal running in LIVE mode")
+
+OMR_TO_USD_RATE = 2.6
+
+OMR_TO_USD_RATE = 2.6
 
 # ============ FastAPI App ============
 app = FastAPI(title="Royal Restaurant API")

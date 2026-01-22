@@ -1,3 +1,4 @@
+
 # Royal Restaurant (FastAPI + Railway)
 
 A luxury food ordering system built with Python (FastAPI) and Vanilla JS.
@@ -12,11 +13,20 @@ A luxury food ordering system built with Python (FastAPI) and Vanilla JS.
 | Variable | Description | Example |
 | :--- | :--- | :--- |
 | `ADMIN_TOKEN` | Secure token for admin panel | `MySuperSecretToken2024` |
-| `PAYPAL_CLIENT_ID` | PayPal REST API Client ID | `Af2z...` |
-| `PAYPAL_SECRET` | PayPal REST API Secret | `EIId...` |
 | `PAYPAL_SANDBOX` | Use Sandbox mode? | `True` or `False` |
+| `PAYPAL_SANDBOX_CLIENT_ID` | PayPal Sandbox Client ID | `Af2z...` |
+| `PAYPAL_SANDBOX_SECRET` | PayPal Sandbox Secret | `EIId...` |
+| `PAYPAL_LIVE_CLIENT_ID` | PayPal Live Client ID (Production) | `AXyz...` |
+| `PAYPAL_LIVE_SECRET` | PayPal Live Secret (Production) | `ELmn...` |
 | `TELEGRAM_BOT_TOKEN` | Bot Token from BotFather | `123456:ABC...` |
 | `TELEGRAM_CHAT_ID` | Chat ID to receive orders | `-100123...` |
+
+### 💳 PayPal Mode Switching
+
+- **`PAYPAL_SANDBOX=True`** → Uses Sandbox credentials with `api-m.sandbox.paypal.com`
+- **`PAYPAL_SANDBOX=False`** → Uses Live credentials with `api-m.paypal.com`
+
+> ⚠️ **Important**: For production, set `PAYPAL_SANDBOX=False` and provide your LIVE credentials.
 
 ## 📂 Project Structure
 
