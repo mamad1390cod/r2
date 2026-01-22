@@ -23,12 +23,12 @@ ADMIN_FILE = os.path.join(BASE_DIR, 'admin.html')
 SUCCESS_FILE = os.path.join(BASE_DIR, 'success.html')
 
 # Environment Variables (Secrets)
-ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "mamad1390") # Default for safety
-PAYPAL_CLIENT_ID = os.getenv("Af2zZSnRBjNhYHNwcfGRhBHPRcpmuGepF3_jFJt55ii_vFCQ2hNmU2tjuHHRA-HnKrWeusDU4Pi7hUR8")
-PAYPAL_SECRET = os.getenv("EIIdgJ5f01dsU_89iMggOl0DMEsSTjIpmU-kS0oXsJHXni1qNKfcH1NkdbjJSIMuBIf5jb8VbbomMroVT")
-PAYPAL_SANDBOX = os.getenv("PAYPAL_SANDBOX", "False").lower() == "true"
-TELEGRAM_BOT_TOKEN = os.getenv("8340371618:AAGGZbXVxxluS3SuwXlhAs9NWQzeucydu3c")
-TELEGRAM_CHAT_ID = os.getenv("-1003187011081")
+ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "secret123") # Default for safety
+PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
+PAYPAL_SECRET = os.getenv("PAYPAL_SECRET")
+PAYPAL_SANDBOX = os.getenv("PAYPAL_SANDBOX", "False").lower() == "False"
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 PAYPAL_API_BASE = 'https://api-m.sandbox.paypal.com' if PAYPAL_SANDBOX else 'https://api-m.paypal.com'
 OMR_TO_USD_RATE = 2.6
