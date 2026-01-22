@@ -24,8 +24,8 @@ SUCCESS_FILE = os.path.join(BASE_DIR, 'success.html')
 
 # Environment Variables (Secrets)
 ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "mamad1390") # Default for safety
-PAYPAL_CLIENT_ID = os.getenv("Af2zZSnRBjNhYHNwcfGRhBHPRcpmuGepF3_jFJt5 5ii_vFCQ2hNmU2tjuHHRA-HnKrWeusDU4Pi7hUR8")
-PAYPAL_SECRET = os.getenv("EIIdgJ5f01dsU_89iMggOl0DMEsSTjIpmU-kS0oX sJHXni1qNKfcH1NkdbjJSIMuBIf5jb8VbbomMroV")
+PAYPAL_CLIENT_ID = os.getenv("Af2zZSnRBjNhYHNwcfGRhBHPRcpmuGepF3_jFJt55ii_vFCQ2hNmU2tjuHHRA-HnKrWeusDU4Pi7hUR8")
+PAYPAL_SECRET = os.getenv("EIIdgJ5f01dsU_89iMggOl0DMEsSTjIpmU-kS0oXsJHXni1qNKfcH1NkdbjJSIMuBIf5jb8VbbomMroVT")
 PAYPAL_SANDBOX = os.getenv("PAYPAL_SANDBOX", "False").lower() == "true"
 TELEGRAM_BOT_TOKEN = os.getenv("8340371618:AAGGZbXVxxluS3SuwXlhAs9NWQzeucydu3c")
 TELEGRAM_CHAT_ID = os.getenv("-1003187011081")
