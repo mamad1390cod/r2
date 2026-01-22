@@ -29,7 +29,7 @@ TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 # ============ PayPal Configuration ============
 # Set PAYPAL_SANDBOX to "True" for testing, "False" for production
-PAYPAL_SANDBOX = os.getenv("PAYPAL_SANDBOX", "True").lower() == "true"
+PAYPAL_SANDBOX = os.getenv("PAYPAL_SANDBOX", "False").lower() == "true"
 
 # Sandbox Credentials (for testing)
 PAYPAL_SANDBOX_CLIENT_ID = os.getenv("PAYPAL_SANDBOX_CLIENT_ID")
